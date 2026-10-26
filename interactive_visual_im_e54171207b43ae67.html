@@ -1,1496 +1,791 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script id="lumi-getcssvar">
-window.getCssVar = window.getCssVar || function(name) {
-  try {
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  } catch (e) { return ''; }
-};
-</script>
-
-<style id="lumi-runtime">
-/* luminous.css */
-/*
- * Luminous runtime stylesheet — injected once into every generated widget's
- * <head> by the C++ widget agent (id="lumi-runtime"). Single Source of Truth
- * for ALL design tokens and pre-baked .lumi-* component classes. The SI prompts
- * (design.md / html_generation.jinja2 / chart.jinja2) must NOT re-declare these
- * tokens or component CSS; they only reference them.
- *
- * Sections:
- *   1. Web fonts (Google Sans Flex + Google Sans Code)
- *   2. Light token :root (from previewer tokens.css, verbatim)
- *   3. Dark token overrides — REMAPPED to :root so canvas/D3 readers of
- *      getComputedStyle(document.documentElement) resolve dark values (D3).
- *   4. Short diagram/chart aliases (bridge legacy --surface / --chart-N names).
- *   5. In-scope pre-baked .lumi-* component classes.
- */
-
-/* ============================================================
- * 1. WEB FONTS  (Google Sans Flex + Google Sans Code only)
- *    Material Symbols Outlined is intentionally NOT loaded: no in-scope
- *    .lumi-* control has a functional CSS glyph dependency on it, and the
- *    icon ban forbids decorative icons (Decision D2).
- * ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:ital,wght@0,300..700;1,300..700&family=Google+Sans+Code:ital,wght,MONO@0,300..700,0..1;1,300..700,0..1&display=swap');
-
-/* ============================================================
- * 2. LIGHT TOKENS (:root)
- * ============================================================ */
-:root {
-  --body-bg: transparent;
-  --ff-sans: 'Google Sans Flex', 'Google Sans Text', 'Google Sans', sans-serif;
-  --ff-mono: 'Google Sans Code', 'Google Sans Mono', monospace;
-
-  --lumi-sys-spacing--xxs: 2px;
-  --lumi-sys-spacing--xs: 4px;
-  --lumi-sys-spacing--s: 8px;
-  --lumi-sys-spacing--m: 12px;
-  --lumi-sys-spacing--l: 16px;
-  --lumi-sys-spacing--xl: 20px;
-  --lumi-sys-spacing--xxl: 24px;
-  --lumi-sys-spacing--3xl: 28px;
-  --lumi-sys-spacing--4xl: 36px;
-
-  --lumi-sys-shape--none: 0px;
-  --lumi-sys-shape--extra-small: 4px;
-  --lumi-sys-shape--small: 8px;
-  --lumi-sys-shape--medium: 12px;
-  --lumi-sys-shape--large: 16px;
-  --lumi-sys-shape--large-increased: 20px;
-  --lumi-sys-shape--large-max: 24px;
-  --lumi-sys-shape--xl: 28px;
-  --lumi-sys-shape--xl-increased: 32px;
-  --lumi-sys-shape--xl-max: 40px;
-  --lumi-sys-shape--xxl: 48px;
-  --lumi-sys-shape--xxl-increased: 56px;
-  --lumi-sys-shape--full: 999px;
-
-  --lumi-sys-elevation--level1: 0 0 20px 0 rgba(0, 0, 0, 0.04);
-  --lumi-sys-elevation--level2: 0 0 20px 0 rgba(0, 0, 0, 0.11);
-
-  --lumi-sys-color--surface: #fdfcfc;
-  --lumi-sys-color--surface-dim: #f2f0f0;
-  --lumi-sys-color--surface-bright: #ffffff;
-  --lumi-sys-color--surface-background: #fdfcfc;
-  --lumi-sys-color--surface-accent: #9dd2ff;
-  --lumi-sys-color--surface-container: #f2f0f0;
-  --lumi-sys-color--surface-container-high: #e6e6e6;
-  --lumi-sys-color--surface-translucent: rgba(255, 255, 255, 0.88);
-  --lumi-sys-color--on-surface: #000000;
-  --lumi-sys-color--on-surface-default: #000000;
-  --lumi-sys-color--on-surface-variant: rgba(0, 0, 0, 0.55);
-  --lumi-sys-color--on-surface-de-emphasis: rgba(0, 0, 0, 0.55);
-  --lumi-sys-color--on-surface-low: rgba(0, 0, 0, 0.08);
-  --lumi-sys-color--positive: #008052;
-  --lumi-sys-color--positive-container: #daf9d4;
-  --lumi-sys-color--on-positive-container: #009954;
-  --lumi-sys-color--error: #de2d29;
-  --lumi-sys-color--error-container: #ffdeec;
-  --lumi-sys-color--on-error-container: #de2d29;
-  --lumi-sys-color--accent: #9dd2ff;
-  --lumi-sys-color--accent-container: #dcf1ff;
-  --lumi-sys-color--accent-fixed: #3186ff;
-  --lumi-sys-color--primary: #3186ff;
-  --lumi-sys-color--on-primary: #ffffff;
-  --lumi-sys-color--black: #000000;
-  --lumi-sys-color--white: #ffffff;
-  --lumi-sys-color--outline: #727676;
-  --lumi-sys-color--stroke-default: #e3e3e3;
-
-  --lumi-sys-opacity-state--hover: 0.08;
-  --lumi-sys-opacity-state--focus: 0.08;
-  --lumi-sys-opacity-state--pressed: 0.12;
-  --lumi-sys-opacity-state--disabled: 0.12;
-  --lumi-sys-opacity-state--disabled-label: 0.38;
-
-  --lumi-sys-color--code-background: #000000;
-  --lumi-sys-color--code-primary-text: #ffffff;
-  --lumi-sys-color--code-blue-text: #4fa0ff;
-  --lumi-sys-color--code-green-text: #60d673;
-  --lumi-sys-color--code-grey-text: #808080;
-  --lumi-sys-color--code-pink-text: #ff96da;
-  --lumi-sys-color--code-purple-text: #969dff;
-  --lumi-sys-color--code-red-text: #ff5a59;
-  --lumi-sys-color--code-yellow-text: #ffdb0f;
-
-  --lumi-sys-color--chart-series-1: #2575fc;
-  --lumi-sys-color--chart-series-2: #5b6e9e;
-  --lumi-sys-color--chart-series-3: #228a49;
-  --lumi-sys-color--chart-series-4: #62991b;
-  --lumi-sys-color--chart-series-5: #1e564d;
-  --lumi-sys-color--chart-series-6: #526a45;
-  --lumi-sys-color--chart-series-7: #2780c4;
-  --lumi-sys-color--chart-series-8: #997112;
-  --lumi-sys-color--chart-series-9: #705ec2;
-  --lumi-sys-color--chart-series-10: #c84288;
-}
-
-/* ============================================================
- * 3. DARK TOKENS  (REMAPPED to :root — Decision D3)
- *    Canvas / Chart.js / D3 read getComputedStyle(document.documentElement);
- *    the theme-sync listener sets data-theme="dark" on <html>, so dark values
- *    MUST live on :root (not scoped to body) to prevent black-chart regressions.
- * ============================================================ */
-:root[data-theme="dark"],
-body.dark-mode,
-:root[data-theme="dark"] body {
-  --body-bg: #0f0f0f;
-  --lumi-sys-elevation--level1: 0 0 20px 0 rgba(0, 0, 0, 0.28);
-  --lumi-sys-elevation--level2: 0 0 20px 0 rgba(0, 0, 0, 0.40);
-
-  --lumi-sys-color--surface: #0f0f0f;
-  --lumi-sys-color--surface-dim: #141414;
-  --lumi-sys-color--surface-bright: #1c1c1c;
-  --lumi-sys-color--surface-background: #0f0f0f;
-  --lumi-sys-color--surface-accent: #14204f;
-  --lumi-sys-color--surface-container: #141414;
-  --lumi-sys-color--surface-container-high: #1c1c1c;
-  --lumi-sys-color--surface-translucent: rgba(24, 24, 27, 0.88);
-  --lumi-sys-color--on-surface: #e0e0e0;
-  --lumi-sys-color--on-surface-default: #e0e0e0;
-  --lumi-sys-color--on-surface-variant: rgba(255, 255, 255, 0.55);
-  --lumi-sys-color--on-surface-de-emphasis: rgba(255, 255, 255, 0.55);
-  --lumi-sys-color--on-surface-low: rgba(255, 255, 255, 0.12);
-  --lumi-sys-color--positive: #0ebc5f;
-  --lumi-sys-color--positive-container: #002220;
-  --lumi-sys-color--on-positive-container: #0ebc5f;
-  --lumi-sys-color--error: #ff4c45;
-  --lumi-sys-color--error-container: #3c0202;
-  --lumi-sys-color--on-error-container: #ff4c45;
-  --lumi-sys-color--accent: #1f3b9b;
-  --lumi-sys-color--accent-container: #192967;
-  --lumi-sys-color--accent-fixed: #3186ff;
-  --lumi-sys-color--primary: #9dd2ff;
-  --lumi-sys-color--on-primary: #192967;
-  --lumi-sys-color--black: #000000;
-  --lumi-sys-color--white: #ffffff;
-  --lumi-sys-color--outline: #9a9b9c;
-  --lumi-sys-color--stroke-default: #2d2f38;
-
-  --lumi-sys-color--code-background: #141414;
-  --lumi-sys-color--code-primary-text: #ffffff;
-  --lumi-sys-color--code-blue-text: #4fa0ff;
-  --lumi-sys-color--code-green-text: #60d673;
-  --lumi-sys-color--code-grey-text: #808080;
-  --lumi-sys-color--code-pink-text: #ff96da;
-  --lumi-sys-color--code-purple-text: #969dff;
-  --lumi-sys-color--code-red-text: #ff5a59;
-  --lumi-sys-color--code-yellow-text: #ffdb0f;
-
-  --lumi-sys-color--chart-series-1: #9dd2ff;
-  --lumi-sys-color--chart-series-2: #96a7d6;
-  --lumi-sys-color--chart-series-3: #50e389;
-  --lumi-sys-color--chart-series-4: #c8f585;
-  --lumi-sys-color--chart-series-5: #f5f2e6;
-  --lumi-sys-color--chart-series-6: #dcd8c0;
-  --lumi-sys-color--chart-series-7: #82c7ff;
-  --lumi-sys-color--chart-series-8: #f5d77f;
-  --lumi-sys-color--chart-series-9: #d9ceff;
-  --lumi-sys-color--chart-series-10: #ffa6d7;
-}
-
-/* ============================================================
- * 3b. OS-LEVEL DARK FALLBACK  (prefers-color-scheme)
- *     A prior refactor introduced this stylesheet and moved the dark tokens onto
- *     :root[data-theme="dark"], but dropped the @media (prefers-color-scheme:
- *     dark) trigger that widgets previously carried in their own <style>.
- *     Inline widgets whose host sends no set-theme / data-theme message therefore
- *     stayed on the light --surface (#fdfcfc), rendering white in dark mode.
- *     Re-apply the dark values on OS dark; an explicit host data-theme="light"
- *     still opts back to light. Keep in sync with the :root[data-theme="dark"]
- *     block above.
- * ============================================================ */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --body-bg: #0f0f0f;
-    --lumi-sys-elevation--level1: 0 0 20px 0 rgba(0, 0, 0, 0.28);
-    --lumi-sys-elevation--level2: 0 0 20px 0 rgba(0, 0, 0, 0.40);
-
-    --lumi-sys-color--surface: #0f0f0f;
-    --lumi-sys-color--surface-dim: #141414;
-    --lumi-sys-color--surface-bright: #1c1c1c;
-    --lumi-sys-color--surface-background: #0f0f0f;
-    --lumi-sys-color--surface-accent: #14204f;
-    --lumi-sys-color--surface-container: #141414;
-    --lumi-sys-color--surface-container-high: #1c1c1c;
-    --lumi-sys-color--surface-translucent: rgba(24, 24, 27, 0.88);
-    --lumi-sys-color--on-surface: #e0e0e0;
-    --lumi-sys-color--on-surface-default: #e0e0e0;
-    --lumi-sys-color--on-surface-variant: rgba(255, 255, 255, 0.55);
-    --lumi-sys-color--on-surface-de-emphasis: rgba(255, 255, 255, 0.55);
-    --lumi-sys-color--on-surface-low: rgba(255, 255, 255, 0.12);
-    --lumi-sys-color--positive: #0ebc5f;
-    --lumi-sys-color--positive-container: #002220;
-    --lumi-sys-color--on-positive-container: #0ebc5f;
-    --lumi-sys-color--error: #ff4c45;
-    --lumi-sys-color--error-container: #3c0202;
-    --lumi-sys-color--on-error-container: #ff4c45;
-    --lumi-sys-color--accent: #1f3b9b;
-    --lumi-sys-color--accent-container: #192967;
-    --lumi-sys-color--accent-fixed: #3186ff;
-    --lumi-sys-color--primary: #9dd2ff;
-    --lumi-sys-color--on-primary: #192967;
-    --lumi-sys-color--black: #000000;
-    --lumi-sys-color--white: #ffffff;
-    --lumi-sys-color--outline: #9a9b9c;
-    --lumi-sys-color--stroke-default: #2d2f38;
-
-    --lumi-sys-color--code-background: #141414;
-    --lumi-sys-color--code-primary-text: #ffffff;
-    --lumi-sys-color--code-blue-text: #4fa0ff;
-    --lumi-sys-color--code-green-text: #60d673;
-    --lumi-sys-color--code-grey-text: #808080;
-    --lumi-sys-color--code-pink-text: #ff96da;
-    --lumi-sys-color--code-purple-text: #969dff;
-    --lumi-sys-color--code-red-text: #ff5a59;
-    --lumi-sys-color--code-yellow-text: #ffdb0f;
-
-    --lumi-sys-color--chart-series-1: #9dd2ff;
-    --lumi-sys-color--chart-series-2: #96a7d6;
-    --lumi-sys-color--chart-series-3: #50e389;
-    --lumi-sys-color--chart-series-4: #c8f585;
-    --lumi-sys-color--chart-series-5: #f5f2e6;
-    --lumi-sys-color--chart-series-6: #dcd8c0;
-    --lumi-sys-color--chart-series-7: #82c7ff;
-    --lumi-sys-color--chart-series-8: #f5d77f;
-    --lumi-sys-color--chart-series-9: #d9ceff;
-    --lumi-sys-color--chart-series-10: #ffa6d7;
+<meta charset="UTF-8">
+<title>RCA Agent Architecture - Executive Interactive Diagram</title>
+<style>
+  :root {
+    --bg: #f8fafc;
+    --text: #0f172a;
+    --subtext: #475569;
+    --border-default: #94a3b8;
+    --active-glow: #2563eb;
+    --query-glow: #9333ea;
   }
-}
 
-/* ============================================================
- * 4. SHORT DIAGRAM / CHART ALIASES
- *    Legacy diagram.md and chart.jinja2 reference short names such as
- *    --surface, --on-surface, --chart-1..10, --primary, --r-full. These MUST
- *    resolve to the canonical --lumi-sys-color--* tokens (which flip in dark
- *    mode) — otherwise every diagram var() falls back to black (historical
- *    mass-regression bug #4). Light-hex fallbacks are a last resort only.
- * ============================================================ */
-:root {
-  /* surfaces */
-  --surface: var(--lumi-sys-color--surface, #fdfcfc);
-  --surface-dim: var(--lumi-sys-color--surface-dim, #f2f0f0);
-  --surface-bright: var(--lumi-sys-color--surface-bright, #ffffff);
-  --surface-container: var(--lumi-sys-color--surface-container, #f2f0f0);
-  --surface-container-high: var(--lumi-sys-color--surface-container-high, #e6e6e6);
-  --surface-container-lowest: var(--lumi-sys-color--surface, #ffffff);
-  --surface-accent: var(--lumi-sys-color--surface-accent, #9dd2ff);
-  --surface-translucent: var(--lumi-sys-color--surface-translucent, rgba(255, 255, 255, 0.88));
-  --surface-glass: var(--lumi-sys-color--surface-translucent, rgba(255, 255, 255, 0.88));
-  /* foreground */
-  --on-surface: var(--lumi-sys-color--on-surface, #000000);
-  --on-surface-variant: var(--lumi-sys-color--on-surface-variant, rgba(0, 0, 0, 0.55));
-  --on-surface-low: var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.08));
-  /* accents / brand */
-  --primary: var(--lumi-sys-color--primary, #3186ff);
-  --primary-container: var(--lumi-sys-color--accent-container, #dcf1ff);
-  --accent: var(--lumi-sys-color--accent, #9dd2ff);
-  --accent-container: var(--lumi-sys-color--accent-container, #dcf1ff);
-  --accent-fixed: var(--lumi-sys-color--accent-fixed, #3186ff);
-  /* status */
-  --positive: var(--lumi-sys-color--positive, #008052);
-  --positive-container: var(--lumi-sys-color--positive-container, #daf9d4);
-  --error: var(--lumi-sys-color--error, #de2d29);
-  --error-container: var(--lumi-sys-color--error-container, #ffdeec);
-  /* structure */
-  --outline: var(--lumi-sys-color--outline, #727676);
-  --stroke-default: var(--lumi-sys-color--stroke-default, #e3e3e3);
-  /* chart series 1..10 */
-  --chart-1: var(--lumi-sys-color--chart-series-1, #2575fc);
-  --chart-2: var(--lumi-sys-color--chart-series-2, #5b6e9e);
-  --chart-3: var(--lumi-sys-color--chart-series-3, #228a49);
-  --chart-4: var(--lumi-sys-color--chart-series-4, #62991b);
-  --chart-5: var(--lumi-sys-color--chart-series-5, #1e564d);
-  --chart-6: var(--lumi-sys-color--chart-series-6, #526a45);
-  --chart-7: var(--lumi-sys-color--chart-series-7, #2780c4);
-  --chart-8: var(--lumi-sys-color--chart-series-8, #997112);
-  --chart-9: var(--lumi-sys-color--chart-series-9, #705ec2);
-  --chart-10: var(--lumi-sys-color--chart-series-10, #c84288);
-  /* code palette */
-  --code-background: var(--lumi-sys-color--code-background, #000000);
-  --code-primary-text: var(--lumi-sys-color--code-primary-text, #ffffff);
-  /* spacing shorthands */
-  --spacing-xs: var(--lumi-sys-spacing--xs, 4px);
-  --spacing-s: var(--lumi-sys-spacing--s, 8px);
-  --spacing-m: var(--lumi-sys-spacing--m, 12px);
-  --spacing-l: var(--lumi-sys-spacing--l, 16px);
-  --spacing-xl: var(--lumi-sys-spacing--xl, 20px);
-  /* radius shorthands */
-  --r-s: var(--lumi-sys-shape--small, 8px);
-  --r-m: var(--lumi-sys-shape--medium, 12px);
-  --r-l: var(--lumi-sys-shape--large, 16px);
-  --r-full: var(--lumi-sys-shape--full, 999px);
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
 
-/* ============================================================
- * 5. IN-SCOPE PRE-BAKED COMPONENT CLASSES
- *    Interactive controls + simple display components only (Decision D5).
- *    Complex components (timeline, sequence, stepper, pros-cons, hero, HUD,
- *    hotspot, media grid) are intentionally excluded.
- * ============================================================ */
+  /* Top Executive Control Bar */
+  header {
+    background: #0f172a;
+    color: #fff;
+    padding: 14px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 20;
+  }
 
-/* Global font rendering quality + themed surface backdrop.
- * background/color MUST be set here (SSoT) so the widget backdrop follows the
- * light/dark surface token deterministically. Without this, a widget whose
- * model-generated markup forgets `background: var(--surface)` on its root
- * container falls back to the browser-default white body, producing a broken
- * dark mode (light header/chart area behind a dark card). Regression source:
- * batch1 PB-A02 dark. */
-html, body {
-  background: var(--body-bg, transparent) !important;
-  color: var(--on-surface) !important;
-  /* Auto-resizing iframe: content grows the frame, never scrolls the document.
-   * Model widgets already emit this; declared here as the SSoT default. */
-  overflow-y: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-optical-sizing: auto;
-  text-rendering: optimizeLegibility;
-}
+  .title-area h1 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #f8fafc;
+  }
 
-.widget-container {
-  width: 100% !important;
-  max-width: 100% !important;
-  padding-inline: 0 !important;
-  box-sizing: border-box;
-}
+  .title-area p {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
 
-/* ============================================================
- * SCROLLBAR DISCIPLINE (single source of truth)
- *   Long lists/cards flow and let the iframe auto-resize (see the C++
- *   NeutralizeInnerScroll pass, which removes accidental tiny scroll boxes).
- *   For LEGITIMATE overflow that remains (wide tables, code, pan-containers,
- *   large >=240px viewports) render a slim, theme-aware scrollbar.
- *   One token carries the correct light/dark contrast (the auto-flipped
- *   stroke token is too dark on #0f0f0f), referenced once = SSoT.
- * ============================================================ */
-:root { --lumi-scrollbar-thumb: rgba(0, 0, 0, 0.20); }
-:root[data-theme="dark"], body.dark-mode { --lumi-scrollbar-thumb: rgba(255, 255, 255, 0.20); }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --lumi-scrollbar-thumb: rgba(255, 255, 255, 0.20); }
-}
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--lumi-scrollbar-thumb) transparent;
-}
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background-color: var(--lumi-scrollbar-thumb);
-  border-radius: var(--lumi-sys-shape--full, 999px);
-}
+  .narrator-bar {
+    flex: 1;
+    margin: 0 36px;
+    background: #1e293b;
+    border-left: 4px solid #38bdf8;
+    padding: 10px 18px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-/* --- Buttons --- */
-/* Universal button fallback (element specificity 0,0,1) — beats `* { padding: 0 }`
-   author resets (0,0,0) while still yielding to any author class selector (0,1,0). */
-button {
-  appearance: none;
-  -webkit-appearance: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--lumi-sys-spacing--xs, 6px);
-  min-height: 36px;
-  padding: 6px 16px;
-  font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif);
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 18px;
-  color: var(--on-surface, #000000);
-  background-color: var(--surface-bright, #ffffff);
-  border: 1px solid var(--stroke-default, #e3e3e3);
-  border-radius: var(--lumi-sys-shape--full, 999px);
-  cursor: pointer;
-  user-select: none;
-  box-sizing: border-box;
-  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
-}
-button:hover {
-  background-color: var(--surface-container-high, #e6e6e6);
-}
-button.active, button.is-active, button.selected, button.is-selected, button[aria-pressed="true"], button[aria-selected="true"] {
-  background-color: var(--accent-container, #dcf1ff);
-  color: var(--accent-fixed, #3186ff);
-  border-color: transparent;
-}
+  .narrator-content {
+    display: flex;
+    flex-direction: column;
+  }
 
-.lumi-btn, [class^="lumi-btn-"], [class*=" lumi-btn-"] { display: inline-flex; align-items: center; justify-content: center; gap: var(--lumi-sys-spacing--s, 8px); min-height: 40px; padding: 0px 20px; font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif); font-size: 14px; font-weight: 500; line-height: 20px; border-radius: var(--lumi-sys-shape--full, 999px); border: 1px solid var(--lumi-sys-color--stroke-default, #e3e3e3); cursor: pointer; user-select: none; transition: background-color 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.1s; text-decoration: none; box-sizing: border-box; white-space: nowrap; }
-.lumi-btn:active, .lumi-btn.is-pressed, [class^="lumi-btn-"]:active, [class*=" lumi-btn-"]:active { transform: scale(0.98); }
-.lumi-btn--tonal, .lumi-btn-tonal, .lumi-btn--secondary, .lumi-btn-secondary, [class^="lumi-btn-"], [class*=" lumi-btn-"] { background-color: var(--lumi-sys-color--surface-bright, #ffffff); color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-btn--tonal:hover, .lumi-btn-tonal:hover, .lumi-btn--secondary:hover, .lumi-btn-secondary:hover, [class^="lumi-btn-"]:hover, [class*=" lumi-btn-"]:hover { background-color: var(--lumi-sys-color--surface-container-high, #e6e6e6); }
-.lumi-btn--accent, .lumi-btn-accent, .lumi-btn--primary, .lumi-btn-primary { background-color: var(--lumi-sys-color--accent, #9dd2ff); color: var(--lumi-sys-color--on-surface-default, #000000); border-color: transparent; }
-.lumi-btn--accent:hover, .lumi-btn-accent:hover, .lumi-btn--primary:hover, .lumi-btn-primary:hover { background-color: var(--lumi-sys-color--accent-container, #dcf1ff); }
-.lumi-btn--bright, .lumi-btn-bright { background-color: var(--lumi-sys-color--surface-bright, #ffffff); color: var(--lumi-sys-color--on-surface-default, #000000); border-color: var(--lumi-sys-color--stroke-default, #e3e3e3); box-shadow: none; }
-.lumi-btn--bright:hover, .lumi-btn-bright:hover { background-color: var(--lumi-sys-color--surface-container-high, #e6e6e6); }
-.lumi-btn--ghost, .lumi-btn-ghost, .lumi-btn--on-surface { background-color: var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.04)); color: var(--lumi-sys-color--on-surface-default, #000000); border-color: transparent; }
-.lumi-btn--ghost:hover, .lumi-btn-ghost:hover, .lumi-btn--on-surface:hover { background-color: var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.08)); }
-.lumi-btn--translucent { background-color: rgba(255, 255, 255, 0.25); backdrop-filter: blur(12px); color: var(--lumi-sys-color--on-surface-default, #000000); border-color: rgba(255, 255, 255, 0.3); }
-.lumi-btn--translucent:hover { background-color: rgba(255, 255, 255, 0.35); }
-.lumi-btn--small, .lumi-btn-small { min-height: 36px; padding: 0px 16px; font-size: 13px; line-height: 18px; gap: var(--lumi-sys-spacing--xs, 4px); }
-.lumi-btn--xsmall, .lumi-btn-xsmall { min-height: 24px; padding: 0px 10px; font-size: 11px; line-height: 16px; gap: 4px; }
-.lumi-btn:disabled, .lumi-btn.is-disabled, [class^="lumi-btn-"]:disabled, [class*=" lumi-btn-"]:disabled { opacity: var(--lumi-sys-opacity-state--disabled, 0.38); cursor: not-allowed; pointer-events: none; }
-.lumi-btn.is-selected, .lumi-btn.selected, .lumi-btn.is-active, .lumi-btn.active, .lumi-btn[aria-pressed="true"], .lumi-btn[aria-selected="true"] { background-color: var(--lumi-sys-color--accent-container, #dcf1ff); color: var(--lumi-sys-color--on-surface-default, #000000); border-color: transparent; }
-.lumi-btn.is-selected:hover, .lumi-btn.selected:hover, .lumi-btn.is-active:hover, .lumi-btn.active:hover, .lumi-btn[aria-pressed="true"]:hover, .lumi-btn[aria-selected="true"]:hover { background-color: var(--lumi-sys-color--accent, #9dd2ff); }
+  .step-badge {
+    font-size: 11px;
+    font-weight: 800;
+    color: #38bdf8;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
 
-/* --- Switch --- */
-.lumi-switch { display: inline-flex; align-items: center; gap: var(--lumi-sys-spacing--s, 8px); cursor: pointer; font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif); font-size: 15px; color: var(--lumi-sys-color--on-surface-default, #000000); user-select: none; }
-.lumi-switch input[type="checkbox"] { position: absolute; opacity: 0; width: 0px; height: 0px; pointer-events: none; }
-.lumi-switch__track { position: relative; display: inline-flex; align-items: center; width: 52px; height: 32px; background-color: var(--lumi-sys-color--surface-dim, #f2f0f0); border: 2px solid var(--lumi-sys-color--stroke-default, rgba(0, 0, 0, 0.12)); border-radius: var(--lumi-sys-shape--full, 999px); transition: background-color 0.2s, border-color 0.2s; flex-shrink: 0; box-sizing: border-box; }
-.lumi-switch__thumb, .lumi-switch__track::after { content: ""; position: absolute; top: 50%; left: 6px; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 50%; background-color: var(--lumi-sys-color--on-surface-variant, #757575); transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
-.lumi-switch input[type="checkbox"]:checked + .lumi-switch__track { background-color: var(--lumi-sys-color--accent-fixed, #3186ff); border-color: transparent; }
-.lumi-switch input[type="checkbox"]:checked + .lumi-switch__track .lumi-switch__thumb, .lumi-switch input[type="checkbox"]:checked + .lumi-switch__track::after { left: 22px; width: 24px; height: 24px; background-color: rgb(255, 255, 255); }
-.lumi-switch input[type="checkbox"]:disabled + .lumi-switch__track { opacity: var(--lumi-sys-opacity-state--disabled, 0.38); cursor: not-allowed; }
-.lumi-switch--small .lumi-switch__track, .lumi-switch--mini .lumi-switch__track { width: 32px; height: 20px; }
-.lumi-switch--small .lumi-switch__thumb, .lumi-switch--small .lumi-switch__track::after, .lumi-switch--mini .lumi-switch__thumb, .lumi-switch--mini .lumi-switch__track::after { width: 12px; height: 12px; left: 2px; }
-.lumi-switch--small input[type="checkbox"]:checked + .lumi-switch__track .lumi-switch__thumb, .lumi-switch--small input[type="checkbox"]:checked + .lumi-switch__track::after, .lumi-switch--mini input[type="checkbox"]:checked + .lumi-switch__track .lumi-switch__thumb, .lumi-switch--mini input[type="checkbox"]:checked + .lumi-switch__track::after { left: 12px; width: 16px; height: 16px; }
+  .step-text {
+    font-size: 13.5px;
+    color: #f1f5f9;
+    margin-top: 3px;
+    line-height: 1.4;
+  }
 
-/* --- Checkbox --- */
-.lumi-checkbox-label { display: inline-flex; align-items: center; gap: var(--lumi-sys-spacing--s, 8px); cursor: pointer; font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif); font-size: 15px; color: var(--lumi-sys-color--on-surface-default, #000000); user-select: none; }
-.lumi-checkbox-label input[type="checkbox"] { position: absolute; opacity: 0; width: 0px; height: 0px; pointer-events: none; }
-.lumi-checkbox { position: relative; width: 24px; height: 24px; border-radius: var(--lumi-sys-shape--small, 8px); border: 2px solid var(--lumi-sys-color--on-surface-variant, rgba(0, 0, 0, 0.55)); background-color: transparent; transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-sizing: border-box; }
-.lumi-checkbox-label:hover .lumi-checkbox { background-color: var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.04)); border-color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-checkbox-label input[type="checkbox"]:checked ~ .lumi-checkbox, .lumi-checkbox-label input[type="checkbox"]:indeterminate ~ .lumi-checkbox, .lumi-checkbox.is-indeterminate { background-color: var(--lumi-sys-color--on-surface-default, #000000); border-color: transparent; }
-.lumi-checkbox .lumi-checkmark { font-size: 18px; line-height: 1; color: var(--lumi-sys-color--surface, #ffffff); fill: var(--lumi-sys-color--surface, #ffffff); display: none; user-select: none; }
-.lumi-checkbox-label input[type="checkbox"]:checked ~ .lumi-checkbox .lumi-checkmark, .lumi-checkbox-label input[type="checkbox"]:checked ~ .lumi-checkbox .lumi-checkbox__check { display: block; }
-.lumi-checkbox-label input[type="checkbox"]:indeterminate ~ .lumi-checkbox .lumi-checkbox__indeterminate, .lumi-checkbox.is-indeterminate .lumi-checkbox__indeterminate { display: block; }
-.lumi-checkbox-label input[type="checkbox"]:disabled ~ .lumi-checkbox, .lumi-checkbox-label input[type="checkbox"]:disabled ~ span { opacity: var(--lumi-sys-opacity-state--disabled, 0.38); cursor: not-allowed; }
+  .controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
 
-/* --- Slider --- */
-.lumi-slider-container { display: flex; align-items: center; gap: var(--lumi-sys-spacing--m, 16px); width: 100%; }
-.lumi-slider-row { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--xs, 4px); width: 100%; }
-.lumi-slider-label { font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif); font-size: 15px; font-weight: 400; color: var(--lumi-sys-color--on-surface-default, #000000); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lumi-slider { appearance: none; width: calc(100% + 28px); margin-left: -14px; margin-right: -14px; height: 40px; background: transparent; cursor: pointer; box-sizing: border-box; }
-.lumi-slider:focus { outline: none; }
-.lumi-slider::-webkit-slider-runnable-track { height: 4px; --thumb-center: calc(14px + (100% - 28px) * (var(--progress, 50%) / 100%)); --active-end: calc(var(--thumb-center) - 8px + (var(--progress, 50%) / 100%) * 6px); background-image: radial-gradient(circle at calc(100% - 18px) center, var(--lumi-sys-color--on-surface-variant, #757575) 2px, transparent 2.5px), linear-gradient( to right, transparent 0, transparent 14px, var(--lumi-sys-color--on-surface-default, #000000) 14px, var(--lumi-sys-color--on-surface-default, #000000) var(--active-end), transparent var(--active-end), transparent calc(var(--thumb-center) + 8px), var(--lumi-sys-color--stroke-default, rgba(0, 0, 0, 0.12)) calc(var(--thumb-center) + 8px), var(--lumi-sys-color--stroke-default, rgba(0, 0, 0, 0.12)) calc(100% - 16px), transparent calc(100% - 16px), transparent 100% ); border-radius: var(--lumi-sys-shape--full, 999px); border-width: medium; border-style: none; border-color: currentcolor; border-image: none; }
-.lumi-slider::-webkit-slider-thumb { appearance: none; width: 32px; height: 32px; border-radius: 50%; background-color: transparent; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect x='14' y='6' width='4' height='20' rx='2' fill='%23000000'/%3E%3C/svg%3E"); background-size: 32px 32px; background-repeat: no-repeat; background-position: center center; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; box-sizing: border-box; margin-top: -14px; cursor: pointer; transition: background-color 0.15s; }
-.lumi-slider:hover::-webkit-slider-thumb { background-color: var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.08)); }
-.lumi-slider:active::-webkit-slider-thumb { background-color: var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.12)); }
-.lumi-slider:disabled { opacity: var(--lumi-sys-opacity-state--disabled, 0.38); cursor: not-allowed; }
-.lumi-slider:disabled::-webkit-slider-thumb { cursor: not-allowed; box-shadow: none; }
-.lumi-slider-value { display: flex; align-items: center; justify-content: center; min-width: 64px; height: 40px; padding: 0px 12px; background-color: var(--lumi-sys-color--surface-dim, #f2f0f0); border-radius: var(--lumi-sys-shape--medium, 16px); font-family: var(--ff-mono, 'Google Sans Code', 'Google Sans Mono', monospace); font-size: 15px; font-weight: 400; color: var(--lumi-sys-color--on-surface-default, #000000); flex-shrink: 0; box-sizing: border-box; }
+  button {
+    background: #334155;
+    color: #fff;
+    border: 1px solid #475569;
+    padding: 9px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
 
-/* --- Text input --- */
-.lumi-input-group { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--xs, 4px); width: 100%; }
-.lumi-input-label { font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif); font-size: 14px; font-weight: 500; line-height: 20px; color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-input { appearance: none; width: 100%; min-height: 48px; padding: 0px 16px; font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif); font-size: 15px; font-weight: 400; line-height: 22px; color: var(--lumi-sys-color--on-surface-default, #000000); background-color: var(--lumi-sys-color--surface-bright, #ffffff); border: 1px solid var(--lumi-sys-color--stroke-default, rgba(0, 0, 0, 0.12)); border-radius: var(--lumi-sys-shape--large, 16px); background-clip: padding-box; outline: none; box-sizing: border-box; transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s; }
-.lumi-input::placeholder { color: var(--lumi-sys-color--on-surface-variant, rgba(0, 0, 0, 0.55)); opacity: 0.7; }
-.lumi-input:hover { border-color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-input:focus, .lumi-input:focus-visible { border-color: var(--lumi-sys-color--accent-fixed, #3186ff); box-shadow: 0 0 0 2px var(--lumi-sys-color--accent-container, rgba(49, 134, 255, 0.25)); }
-textarea.lumi-input, .lumi-input--area { min-height: 100px; padding: 12px 16px; resize: vertical; line-height: 22px; }
-.lumi-input.is-error, .lumi-input-group.is-error .lumi-input { border-color: var(--lumi-sys-color--error, #ff4c45); }
-.lumi-input-helper { font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif); font-size: 12px; line-height: 16px; color: var(--lumi-sys-color--on-surface-variant, rgba(0, 0, 0, 0.55)); }
-.lumi-input-group.is-error .lumi-input-helper, .lumi-input-helper--error { color: var(--lumi-sys-color--error, #ff4c45); }
-.lumi-input:disabled, .lumi-input.is-disabled { opacity: var(--lumi-sys-opacity-state--disabled, 0.38); background-color: var(--lumi-sys-color--surface-dim, #f2f0f0); cursor: not-allowed; }
+  button:hover { background: #475569; }
+  button.primary {
+    background: #2563eb;
+    border-color: #3b82f6;
+  }
+  button.primary:hover { background: #1d4ed8; }
 
-/* --- Focus ring --- */
-:focus-visible { outline: 2px solid var(--lumi-sys-color--on-surface-default, #000000) !important; outline-offset: 2px !important; box-shadow: none !important; }
-.lumi-btn:focus-visible, .lumi-switch input[type="checkbox"]:focus-visible + .lumi-switch__track, .lumi-checkbox-label input[type="checkbox"]:focus-visible ~ .lumi-checkbox, .lumi-slider:focus-visible::-webkit-slider-thumb, .lumi-input:focus-visible { outline: 2px solid var(--lumi-sys-color--on-surface-default, #000000); outline-offset: 2px; box-shadow: none; }
+  /* Scaling Canvas Container */
+  #viewport {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
 
-/* --- Typography: Display / Headline / Body / Label --- */
-.lumi-display-l { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 42px; line-height: 48px; font-weight: 280; font-variation-settings: "wght" 280, "wdth" 100, "opsz" 42, "ROND" 100; }
-.lumi-display-l-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 42px; line-height: 48px; font-weight: 450; font-variation-settings: "wght" 450, "wdth" 100, "opsz" 42, "ROND" 100; }
-.lumi-display-m { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 36px; line-height: 44px; font-weight: 320; font-variation-settings: "wght" 320, "wdth" 100, "opsz" 36, "ROND" 100; }
-.lumi-display-m-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 36px; line-height: 44px; font-weight: 480; font-variation-settings: "wght" 480, "wdth" 100, "opsz" 36, "ROND" 100; }
-.lumi-display-s { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 32px; line-height: 38px; font-weight: 360; font-variation-settings: "wght" 360, "wdth" 100, "opsz" 32, "ROND" 100; }
-.lumi-display-s-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 32px; line-height: 38px; font-weight: 500; font-variation-settings: "wght" 500, "wdth" 100, "opsz" 32, "ROND" 100; }
-.lumi-headline-l { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 28px; line-height: 36px; font-weight: 350; font-variation-settings: "wght" 350, "wdth" 100, "opsz" 28, "ROND" 20; }
-.lumi-headline-l-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 28px; line-height: 36px; font-weight: 520; font-variation-settings: "wght" 520, "wdth" 100, "opsz" 28, "ROND" 20; }
-.lumi-headline-m { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 24px; line-height: 28px; font-weight: 380; font-variation-settings: "wght" 380, "wdth" 100, "opsz" 24, "ROND" 20; }
-.lumi-headline-m-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 24px; line-height: 28px; font-weight: 540; font-variation-settings: "wght" 540, "wdth" 100, "opsz" 24, "ROND" 20; }
-.lumi-headline-s { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 20px; line-height: 24px; font-weight: 470; font-variation-settings: "wght" 470, "wdth" 94, "opsz" 20, "ROND" 20; }
-.lumi-headline-s-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 20px; line-height: 24px; font-weight: 580; font-variation-settings: "wght" 580, "wdth" 94, "opsz" 20, "ROND" 20; }
-.lumi-body-l { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 17px; line-height: 24px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 17; }
-.lumi-body-l-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 17px; line-height: 24px; font-weight: 540; font-variation-settings: "wght" 540, "wdth" 92, "opsz" 17; font-variant-numeric: tabular-nums; }
-.lumi-body-m { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 15px; line-height: 20px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 15; }
-.lumi-body-m-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 15px; line-height: 20px; font-weight: 540; font-variation-settings: "wght" 540, "wdth" 92, "opsz" 15; font-variant-numeric: tabular-nums; }
-.lumi-body-s { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 13px; line-height: 17px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 13; }
-.lumi-body-s-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 13px; line-height: 17px; font-weight: 540; font-variation-settings: "wght" 540, "wdth" 92, "opsz" 13; font-variant-numeric: tabular-nums; }
-.lumi-label-l { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 17px; line-height: 24px; font-weight: 370; font-variation-settings: "wght" 370, "wdth" 92, "opsz" 17; }
-.lumi-label-l-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 17px; line-height: 24px; font-weight: 510; font-variation-settings: "wght" 510, "wdth" 92, "opsz" 17; }
-.lumi-label-m { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 15px; line-height: 20px; font-weight: 370; font-variation-settings: "wght" 370, "wdth" 92, "opsz" 15; }
-.lumi-label-m-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 15px; line-height: 20px; font-weight: 510; font-variation-settings: "wght" 510, "wdth" 92, "opsz" 15; }
-.lumi-label-s { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 13px; line-height: 20px; font-weight: 370; font-variation-settings: "wght" 370, "wdth" 92, "opsz" 13; }
-.lumi-label-s-emphasized { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 13px; line-height: 20px; font-weight: 510; font-variation-settings: "wght" 510, "wdth" 92, "opsz" 13; }
+  #canvas {
+    width: 1700px;
+    height: 760px;
+    position: relative;
+    transform-origin: center center;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 12px 36px rgba(15, 23, 42, 0.12);
+    border: 1px solid #cbd5e1;
+  }
 
-/* --- Typography: Monospace / Extended (Google Sans Code) --- */
-.lumi-blockquote { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-style: italic; font-size: 22px; line-height: 30px; font-weight: 300; font-variation-settings: "wght" 300, "opsz" 22, "MONO" 0; }
-.lumi-takeaway { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-style: italic; font-size: 17px; line-height: 24px; font-weight: 400; font-variation-settings: "wght" 400, "opsz" 17, "MONO" 0; }
-.lumi-caption { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-style: italic; font-size: 13px; line-height: 20px; font-weight: 400; font-variation-settings: "wght" 400, "opsz" 13, "MONO" 0; }
-.lumi-code { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-size: 15px; line-height: 20px; font-weight: 400; font-variation-settings: "wght" 400, "MONO" 1; }
-.lumi-bullet { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-size: 15px; line-height: 24px; font-weight: 650; font-variation-settings: "wght" 650, "MONO" 1; }
+  /* Structural Background Zones (Matching Original Diagram) */
+  .zone {
+    position: absolute;
+    border-radius: 6px;
+    transition: opacity 0.4s ease, filter 0.4s ease;
+  }
 
-/* --- Cards & attribution --- */
-.lumi-summary-card { padding: var(--lumi-sys-spacing--l, 16px); background-color: var(--lumi-sys-color--surface-container, #f2f0f0); border-radius: var(--lumi-sys-shape--medium, 12px); color: var(--lumi-sys-color--on-surface-default, #000000); font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 15px; line-height: 20px; box-sizing: border-box; }
-.lumi-link-card { display: flex; align-items: center; justify-content: space-between; padding: var(--lumi-sys-spacing--l, 16px); background-color: var(--lumi-sys-color--surface-container, #f2f0f0); border-radius: var(--lumi-sys-shape--medium, 12px); text-decoration: none; color: var(--lumi-sys-color--on-surface-default, #000000); transition: background-color 0.15s; box-sizing: border-box; }
-.lumi-link-card:hover { background-color: var(--lumi-sys-color--surface-container-high, #e6e6e6); }
-.lumi-attribution-buffer { margin-top: var(--lumi-sys-spacing--xxl, 24px); font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 13px; color: var(--lumi-sys-color--on-surface-de-emphasis, rgba(0, 0, 0, 0.55)); }
-.lumi-card { background-color: var(--lumi-sys-color--surface-dim, #f2f0f0); border-radius: var(--lumi-sys-shape--large-max, 24px); padding: var(--lumi-sys-spacing--3xl, 28px); display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--s, 8px); width: 100%; box-sizing: border-box; }
-.lumi-card-title { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 20px; font-weight: 500; font-variation-settings: "wght" 470, "wdth" 94, "opsz" 20; color: var(--lumi-sys-color--on-surface, #000000); margin: 0px; }
-.lumi-card-subtitle { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 13px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 13; color: var(--lumi-sys-color--on-surface-variant, rgba(0, 0, 0, 0.55)); margin: 0px; }
-.lumi-card-body { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 15px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 15; color: var(--lumi-sys-color--on-surface, #000000); margin: var(--lumi-sys-spacing--xs, 4px) 0 0 0; }
-.lumi-overlay-card { background-color: var(--surface-translucent, rgba(255, 255, 255, 0.88)); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--stroke-default); border-radius: var(--lumi-sys-shape--medium, 12px); padding: var(--lumi-sys-spacing--m, 12px) var(--lumi-sys-spacing--l, 16px); color: var(--on-surface); box-shadow: var(--lumi-sys-elevation--level1); box-sizing: border-box; }
+  .zone-label {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.6px;
+    color: #334155;
+    text-transform: uppercase;
+  }
 
-/* --- Progress bar --- */
-.lumi-progress-tracker { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--xs, 4px); width: 100%; }
-.lumi-progress-bar { width: 100%; height: 8px; background-color: var(--lumi-sys-color--stroke-default, #e3e3e3); border-radius: var(--lumi-sys-shape--full, 999px); overflow: hidden; }
-.lumi-progress-fill { height: 100%; background-color: var(--lumi-sys-color--accent-fixed, #3186ff); border-radius: var(--lumi-sys-shape--full, 999px); transition: width 0.3s; }
+  /* Exact Zone Colors from Original Diagram */
+  .zone-ingestion {
+    left: 25px; top: 30px; width: 675px; height: 700px;
+    background: #fdf2f8; border: 1.5px solid #d8b4fe;
+  }
+  .zone-pipelines {
+    left: 42px; top: 65px; width: 470px; height: 645px;
+    background: #ecfdf5; border: 1.5px solid #a7f3d0;
+  }
+  .zone-subpipeline {
+    left: 58px; width: 438px;
+    background: #fef3c7; border: 1.5px solid #fde68a;
+  }
+  .zone-sub-2 {
+    left: 58px; width: 438px;
+    background: #e0f2fe; border: 1.5px solid #bae6fd;
+  }
+  .zone-sub-3 {
+    left: 58px; width: 438px;
+    background: #dcfce7; border: 1.5px solid #bbf7d0;
+  }
+  .zone-datastores {
+    left: 535px; top: 180px; width: 145px; height: 440px;
+    background: #f3e8ff; border: 1.5px solid #d8b4fe;
+  }
+  .zone-langgraph {
+    left: 745px; top: 110px; width: 930px; height: 540px;
+    background: #fff1f2; border: 1.5px solid #fecdd3;
+  }
 
-/* --- Accordion (card group variant) --- */
-.lumi-accordion-group { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--s, 8px); }
-.lumi-accordion-group .lumi-accordion-item { background-color: var(--lumi-sys-color--surface-container, #f2f0f0); border-radius: var(--lumi-sys-shape--medium, 12px); overflow: hidden; transition: background-color 0.15s; }
-.lumi-accordion-group .lumi-accordion-header { padding: var(--lumi-sys-spacing--l, 16px); font-family: var(--ff-sans, sans-serif); font-size: 15px; font-weight: 540; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-accordion-group .lumi-accordion-chevron { transition: transform 0.2s; font-size: 12px; }
-.lumi-accordion-group .lumi-accordion-item.active .lumi-accordion-chevron { transform: rotate(180deg); }
-.lumi-accordion-group .lumi-accordion-body { display: none; padding: 0 var(--lumi-sys-spacing--l, 16px) var(--lumi-sys-spacing--l, 16px) var(--lumi-sys-spacing--l, 16px); font-family: var(--ff-sans, sans-serif); font-size: 15px; color: var(--lumi-sys-color--on-surface-de-emphasis, rgba(0, 0, 0, 0.55)); line-height: 20px; }
-.lumi-accordion-group .lumi-accordion-item.active .lumi-accordion-body { display: block; }
+  /* Nodes */
+  .node {
+    position: absolute;
+    background: #ffffff;
+    border: 1.5px solid #64748b;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 8px 10px;
+    font-size: 11.5px;
+    line-height: 1.35;
+    color: #1e293b;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 5;
+  }
 
-/* --- Accordion (borderless list variant) --- */
-.lumi-accordion { display: flex; flex-direction: column; width: 100%; border-top: 1px solid var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.08)); }
-.lumi-accordion-item { display: flex; flex-direction: column; width: 100%; background: transparent; border-radius: 0px; border-bottom: 1px solid var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.08)); }
-.lumi-accordion-header { display: flex; justify-content: space-between; align-items: center; padding: var(--lumi-sys-spacing--xl, 20px) 0; cursor: pointer; user-select: none; }
-.lumi-accordion-title { margin: 0px; color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-accordion-item.active .lumi-accordion-content { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--l, 16px); }
-.lumi-accordion-content { display: none; padding-bottom: var(--lumi-sys-spacing--xxl, 24px); }
-.lumi-accordion-field { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--xxs, 2px); }
-.lumi-accordion-field-label { margin: 0px; color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-accordion-field-val { margin: 0px; color: var(--lumi-sys-color--on-surface-default, #000000); }
+  .node strong {
+    font-weight: 700;
+    display: block;
+    margin-bottom: 2px;
+    color: #0f172a;
+  }
 
-/* --- Segmented control --- */
-.lumi-segmented-group { display: flex; background-color: var(--lumi-sys-color--surface-container, #f2f0f0); padding: 4px; border-radius: var(--lumi-sys-shape--full, 999px); gap: 4px; }
-.lumi-segmented-btn { flex: 1 1 0%; padding: 8px 16px; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; border-radius: var(--lumi-sys-shape--full, 999px); background-color: transparent; font-family: var(--ff-sans, sans-serif); font-size: 14px; font-weight: 510; cursor: pointer; color: var(--lumi-sys-color--on-surface-de-emphasis, rgba(0, 0, 0, 0.55)); transition: 0.2s; }
-.lumi-segmented-btn.is-active { background-color: var(--lumi-sys-color--surface-bright, #ffffff); color: var(--lumi-sys-color--on-surface-default, #000000); box-shadow: var(--lumi-sys-elevation--level1); }
+  .node-blue {
+    background: #e0f2fe;
+    border-color: #0284c7;
+  }
 
-/* --- Tabs --- */
-.lumi-tab-group { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--4xl, 36px); width: 100%; }
-.lumi-tab-bar { display: flex; gap: var(--lumi-sys-spacing--l, 16px); padding-bottom: 0px; overflow-x: auto; scrollbar-width: none; }
-.lumi-tab-bar::-webkit-scrollbar { display: none; }
-.lumi-tab { height: 40px; padding: 0 var(--lumi-sys-spacing--xl, 20px); display: flex; align-items: center; justify-content: center; font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 17px; line-height: 24px; font-weight: 370; font-variation-settings: "wght" 370, "wdth" 92, "opsz" 17; color: var(--lumi-sys-color--on-surface-de-emphasis, rgba(0, 0, 0, 0.55)); background: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; border-radius: var(--lumi-sys-shape--full, 999px); cursor: pointer; white-space: nowrap; transition: background-color 0.15s, color 0.15s; }
-.lumi-tab:hover { color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-tab.active { background-color: var(--lumi-sys-color--surface-container-high, #f2f0f0); color: var(--lumi-sys-color--on-surface-default, #000000); font-weight: 510; font-variation-settings: "wght" 510, "wdth" 92, "opsz" 17; }
-.lumi-tab-content { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--m, 12px); padding-top: 0px; padding-bottom: 0px; }
-.lumi-tab-content .lumi-body-l-emphasized, .lumi-tab-content .lumi-headline-s { margin: 0px; }
-.lumi-tab-content .lumi-body-l { margin: 0px; color: var(--lumi-sys-color--on-surface-default, #000000); }
+  /* Parallelogram (UI Input & Output Report) */
+  .node-parallelogram {
+    transform: skew(-14deg);
+    background: #f1f5f9;
+    border-color: #475569;
+  }
+  .node-parallelogram > div {
+    transform: skew(14deg);
+  }
 
-/* --- Callout / pullquote --- */
-.lumi-callout { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--xs, 4px); width: 100%; }
-.lumi-callout .lumi-body-l-emphasized { margin: 0px; }
-.lumi-pullquote { display: flex; gap: var(--lumi-sys-spacing--xl, 20px); width: 100%; margin: 0px; }
-.lumi-pullquote-mark { width: 30px; height: 22px; flex-shrink: 0; margin-top: 4px; color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-pullquote-body { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--l, 16px); flex: 1 1 0%; min-width: 0px; }
-p.lumi-pullquote-text, .lumi-pullquote-text { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-style: italic; font-weight: 300; font-variation-settings: "wght" 300, "opsz" 22, "MONO" 0; color: var(--lumi-sys-color--on-surface-default, #000000); margin: 0px; font-size: 22px !important; line-height: 30px !important; }
-.lumi-pullquote-cite { display: flex; flex-direction: column; font-style: normal; }
-.lumi-pullquote-cite .lumi-de-emphasis { color: var(--lumi-sys-color--on-surface-de-emphasis, rgba(0, 0, 0, 0.55)); }
+  .node-green {
+    background: #bbf7d0;
+    border-color: #16a34a;
+  }
 
-/* --- Data table (simple) --- */
-.lumi-data-table-container { width: 100%; overflow-x: auto; border-radius: var(--lumi-sys-shape--medium, 12px); border: 1px solid var(--lumi-sys-color--stroke-default, rgba(0, 0, 0, 0.12)); }
-.lumi-data-table { width: 100%; border-collapse: collapse; font-family: var(--ff-sans, sans-serif); font-size: 14px; text-align: left; }
-.lumi-data-table th { padding: 12px 16px; font-weight: 600; background-color: var(--lumi-sys-color--surface-container, #f2f0f0); border-bottom: 1px solid var(--lumi-sys-color--stroke-default, rgba(0, 0, 0, 0.12)); color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-data-table td { padding: 12px 16px; border-bottom: 1px solid var(--lumi-sys-color--stroke-default, rgba(0, 0, 0, 0.12)); color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-data-table tr:last-child td { border-bottom-width: medium; border-bottom-style: none; border-bottom-color: currentcolor; }
+  /* Diamond Shapes (Router & Loop) */
+  .node-diamond {
+    width: 116px;
+    height: 116px;
+    transform: rotate(45deg);
+    border-radius: 6px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .node-diamond > div {
+    transform: rotate(-45deg);
+    width: 130px;
+    text-align: center;
+    font-size: 11px;
+    padding: 4px;
+  }
 
-/* --- Table widget (prose-style) --- */
-.lumi-table-widget { display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--xxl, 24px); width: 100%; }
-.lumi-table-title { margin: 0px; color: var(--lumi-sys-color--on-surface-default, #000000); }
-.lumi-table { width: 100%; border-collapse: collapse; font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); text-align: left; }
-.lumi-table th { padding: 12px 16px 12px 0px; font-size: 17px; line-height: 24px; font-weight: 540; font-variation-settings: "wght" 540, "wdth" 92, "opsz" 17; color: var(--lumi-sys-color--on-surface-default, #000000); border-bottom: 1px solid var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.08)); }
-.lumi-table td { padding: 16px 16px 16px 0px; font-size: 17px; line-height: 24px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 17; color: var(--lumi-sys-color--on-surface-default, #000000); border-bottom: 1px solid var(--lumi-sys-color--on-surface-low, rgba(0, 0, 0, 0.08)); }
-.lumi-table td:last-child, .lumi-table th:last-child { padding-right: 0px; }
-.lumi-table tr.lumi-table-ellipsis-row td { padding: 16px 0px 0px; border-bottom-width: medium; border-bottom-style: none; border-bottom-color: currentcolor; color: var(--lumi-sys-color--on-surface-variant, rgba(0, 0, 0, 0.55)); }
+  .diamond-yellow {
+    background: #fef08a;
+    border: 2px solid #ca8a04;
+  }
+  .diamond-blue {
+    background: #e0f2fe;
+    border: 2px solid #0284c7;
+  }
 
-/* --- Code block --- */
-.lumi-code-block { background-color: var(--lumi-sys-color--code-background, #000000); border-radius: var(--lumi-sys-shape--xl-max, 40px); padding: 32px; display: flex; flex-direction: column; gap: var(--lumi-sys-spacing--l, 16px); width: 100%; box-sizing: border-box; }
-.lumi-code-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-.lumi-code-lang { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 15px; font-weight: 500; font-variation-settings: "wght" 540, "wdth" 92, "opsz" 15; color: var(--lumi-sys-color--code-primary-text, #ffffff); }
-.lumi-code-copy { background: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; color: var(--lumi-sys-color--code-primary-text, #ffffff); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: var(--lumi-sys-shape--full, 999px); transition: background-color 0.2s; }
-.lumi-code-copy:hover { background-color: rgba(255, 255, 255, 0.1); }
-.lumi-code-snippet { margin: 0px; overflow-x: auto; width: 100%; }
-.lumi-code-snippet code { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-size: 15px; line-height: 20px; color: var(--lumi-sys-color--code-primary-text, #ffffff); display: block; white-space: pre; }
+  /* Database Cylinders */
+  .node-cylinder {
+    background: linear-gradient(90deg, #d8b4fe 0%, #f3e8ff 50%, #d8b4fe 100%);
+    border: 1.5px solid #7e22ce;
+    border-radius: 50% / 14%;
+    padding-top: 22px;
+  }
+  .node-cylinder::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -1px; right: -1px;
+    height: 26px;
+    background: #e9d5ff;
+    border: 1.5px solid #7e22ce;
+    border-radius: 50%;
+  }
 
-/* --- Section / prose --- */
-.lumi-section { display: flex; flex-direction: column; align-items: flex-start; width: 100%; }
-.lumi-section h1 { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 28px; line-height: 36px; font-weight: 350; font-variation-settings: "wght" 350, "wdth" 100, "opsz" 28; color: var(--lumi-sys-color--on-surface, #000000); margin-top: var(--lumi-sys-spacing--m, 12px); margin-bottom: var(--lumi-sys-spacing--xxl, 24px); }
-.lumi-section h1:first-child { margin-top: 0px; }
-.lumi-section h2 { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 24px; line-height: 28px; font-weight: 380; font-variation-settings: "wght" 380, "wdth" 100, "opsz" 24; color: var(--lumi-sys-color--on-surface, #000000); margin-top: var(--lumi-sys-spacing--m, 12px); margin-bottom: var(--lumi-sys-spacing--m, 12px); }
-.lumi-section h2:first-child { margin-top: 0px; }
-.lumi-section h3 { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 20px; line-height: 24px; font-weight: 470; font-variation-settings: "wght" 470, "wdth" 94, "opsz" 20; color: var(--lumi-sys-color--on-surface, #000000); margin-top: var(--lumi-sys-spacing--m, 12px); margin-bottom: var(--lumi-sys-spacing--xs, 4px); }
-.lumi-section h3:first-child { margin-top: 0px; }
-.lumi-section p { font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 17px; line-height: 24px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 17; color: var(--lumi-sys-color--on-surface, #000000); margin-top: 0px; margin-bottom: var(--lumi-sys-spacing--m, 12px); }
-.lumi-section p:last-child { margin-bottom: 0px; }
-.lumi-section ul { list-style: none; padding: 0px; margin: 0 0 var(--lumi-sys-spacing--m, 12px) 0; width: 100%; }
-.lumi-section ul:last-child { margin-bottom: 0px; }
-.lumi-section li { position: relative; padding-left: 40px; padding-bottom: 12px; font-family: var(--ff-sans, 'Google Sans Flex', sans-serif); font-size: 17px; line-height: 24px; font-weight: 400; font-variation-settings: "wght" 400, "wdth" 92, "opsz" 17; color: var(--lumi-sys-color--on-surface, #000000); box-sizing: border-box; }
-.lumi-section li:last-child { padding-bottom: 0px; }
-.lumi-section li::before { content: "○"; position: absolute; left: 3.5px; top: 0px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-family: var(--ff-mono, 'Google Sans Code', monospace); font-size: 15px; font-weight: 650; font-variation-settings: "MONO" 1, "wght" 650; color: var(--lumi-sys-color--on-surface, #000000); }
-.lumi-section li ul { margin-top: 12px; margin-bottom: 0px; padding-left: 40px; }
+  /* SVG Edges & Labels */
+  svg#edges {
+    position: absolute;
+    top: 0; left: 0;
+    width: 1700px;
+    height: 760px;
+    z-index: 3;
+    pointer-events: none;
+  }
 
-/* --- Chart legend (1:1 series color match) --- */
-.lumi-chart-header, .lumi-chart-title { margin-bottom: 32px; }
-.lumi-chart-legend { display: flex; justify-content: center; align-items: center; gap: 24px; margin-top: 32px; padding-top: 0px; width: 100%; flex-wrap: wrap; }
-.lumi-legend-item { display: inline-flex; align-items: center; gap: 8px; }
-.lumi-legend-dot { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.lumi-legend-dot-swatch { width: 20px; height: 20px; border-radius: 50%; display: block; }
-span.lumi-legend-dot[style*="background"] { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
-.lumi-legend-label { font-family: var(--ff-mono, 'Google Sans Code', monospace); font-style: italic; font-size: 13px; font-weight: 400; line-height: 20px; color: var(--lumi-sys-color--on-surface, #000000); font-variation-settings: "MONO" 0; white-space: nowrap; }
+  .edge {
+    fill: none;
+    stroke: #475569;
+    stroke-width: 1.8;
+    transition: all 0.4s ease;
+  }
 
-/* Canonical themed <select>. Uses element+class specificity (select.lumi-select)
-   so it intentionally wins over any model hand-rolled `.lumi-select` rule: the
-   runtime stylesheet is injected before widget <style> blocks, so a bare
-   `.lumi-select` (same specificity, later) would otherwise override it. This
-   provides appearance:none + a theme-neutral chevron so no native OS arrow leaks. */
-select.lumi-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  width: 100%;
-  padding: var(--lumi-sys-spacing--s, 8px) 40px var(--lumi-sys-spacing--s, 8px)
-    var(--lumi-sys-spacing--m, 12px);
-  border: 1px solid var(--stroke-default);
-  border-radius: var(--r-full, 999px);
-  background-color: var(--surface);
-  color: var(--on-surface);
-  font-family: var(--ff-sans, 'Google Sans Flex', sans-serif);
-  font-size: 15px;
-  line-height: 20px;
-  cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2380868b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 14px;
-}
-select.lumi-select:focus-visible {
-  outline: 2px solid var(--lumi-sys-color--accent-fixed, #3186ff);
-  outline-offset: 2px;
-}
+  .edge-dashed {
+    stroke-dasharray: 5, 5;
+    stroke: #6b21a8;
+  }
 
-/* Toggle / filter chip. Models frequently emit `<button class="lumi-chip">`
-   (or `.lumi-chip-btn`, `.lumi-filter-btn`, `[class^="lumi-chip-"]`, with
-   `.is-active`/`.active`/`.is-selected`) for toggle pills; without a
-   canonical rule these fall back to native (retro) browser button chrome.
-   Theme-aware via runtime tokens so it is correct in light and dark. */
-.lumi-chip,
-[class^="lumi-chip"],
-[class*=" lumi-chip"],
-[class^="lumi-pill"],
-[class*=" lumi-pill"] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--lumi-sys-spacing--s, 8px);
-  min-height: 32px;
-  padding: 0 16px;
-  font-family: var(--ff-sans, 'Google Sans Flex', 'Google Sans', sans-serif);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 20px;
-  color: var(--lumi-sys-color--on-surface-default, #1f1f1f);
-  background: var(--lumi-sys-color--surface-dim, #f2f0f0);
-  border: 1px solid transparent;
-  border-radius: var(--lumi-sys-shape--full, 999px);
-  cursor: pointer;
-  user-select: none;
-  white-space: nowrap;
-  box-sizing: border-box;
-  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
-  -webkit-appearance: none;
-  appearance: none;
-}
-.lumi-chip:hover,
-[class^="lumi-chip"]:hover,
-[class*=" lumi-chip"]:hover,
-[class^="lumi-pill"]:hover,
-[class*=" lumi-pill"]:hover {
-  background: var(--lumi-sys-color--surface-container-high, #e6e6e6);
-}
-.lumi-chip.is-active,
-.lumi-chip.active,
-.lumi-chip.is-selected,
-.lumi-chip.selected,
-.lumi-chip[aria-pressed="true"],
-.lumi-chip[aria-selected="true"],
-[class^="lumi-chip"].is-active,
-[class^="lumi-chip"].active,
-[class^="lumi-chip"].is-selected,
-[class^="lumi-chip"].selected,
-[class^="lumi-chip"][aria-pressed="true"],
-[class^="lumi-chip"][aria-selected="true"],
-[class*=" lumi-chip"].is-active,
-[class*=" lumi-chip"].active,
-[class*=" lumi-chip"].is-selected,
-[class*=" lumi-chip"].selected,
-[class^="lumi-pill"].is-active,
-[class^="lumi-pill"].active,
-[class*=" lumi-pill"].is-active,
-[class*=" lumi-pill"].active {
-  color: var(--lumi-sys-color--accent-fixed, #3186ff);
-  background: var(--lumi-sys-color--accent-container, rgba(49, 134, 255, 0.14));
-  border-color: transparent;
-  font-weight: 600;
-}
-.lumi-chip:focus-visible,
-[class^="lumi-chip"]:focus-visible,
-[class*=" lumi-chip"]:focus-visible,
-[class^="lumi-pill"]:focus-visible,
-[class*=" lumi-pill"]:focus-visible {
-  outline: 2px solid var(--lumi-sys-color--accent-fixed, #3186ff);
-  outline-offset: 2px;
-}
+  .edge-label {
+    position: absolute;
+    background: #e2e8f0;
+    border: 1px solid #94a3b8;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #1e293b;
+    z-index: 6;
+    transform: translate(-50%, -50%);
+    transition: all 0.4s ease;
+  }
 
-/* ============================================================
- * DIAGRAM GUARD — SVG <text> is fill-only.
- *   An inherited group stroke (e.g. `.node:hover { stroke }` on a <g>)
- *   otherwise cascades into child <text>, thickening glyph outlines
- *   (fake-bold) and recoloring the label. Highlight strokes belong on
- *   shapes (rect/path); text never paints a stroke.
- * ============================================================ */
-svg text { stroke: none; paint-order: fill; }
+  /* Interactive Highlight & Dimming States */
+  .dimmed {
+    opacity: 0.16 !important;
+    filter: grayscale(70%);
+  }
 
+  .active-node {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35), 0 8px 20px rgba(37, 99, 235, 0.25) !important;
+    border-color: #1d4ed8 !important;
+    border-width: 2.5px !important;
+    z-index: 10 !important;
+  }
+
+  .active-edge {
+    stroke: #2563eb !important;
+    stroke-width: 3.2 !important;
+    stroke-dasharray: 8, 6 !important;
+    animation: flowAnim 0.7s linear infinite;
+  }
+
+  .active-edge-query {
+    stroke: #9333ea !important;
+    stroke-width: 3 !important;
+    stroke-dasharray: 6, 6 !important;
+    animation: flowAnim 0.7s linear infinite;
+  }
+
+  .active-label {
+    background: #dbeafe !important;
+    border-color: #2563eb !important;
+    color: #1e3a8a !important;
+    font-weight: 700;
+    transform: translate(-50%, -50%) scale(1.08);
+    z-index: 12;
+  }
+
+  @keyframes flowAnim {
+    to { stroke-dashoffset: -28; }
+  }
 </style>
-<style id="lumi-surface-button-fallbacks">
-.widget-container {
-  width: 100% !important;
-  max-width: 100% !important;
-  padding-inline: 0 !important;
-  box-sizing: border-box;
-}
-:root {
-  --lumi-sys-color--surface-translucent: rgba(255, 255, 255, 0.88);
-  --surface-translucent: var(--lumi-sys-color--surface-translucent, rgba(255, 255, 255, 0.88));
-  --surface-glass: var(--lumi-sys-color--surface-translucent, rgba(255, 255, 255, 0.88));
-}
-:root[data-theme="dark"], body.dark-mode {
-  --lumi-sys-color--surface-translucent: rgba(24, 24, 27, 0.88);
-  --surface-translucent: rgba(24, 24, 27, 0.88);
-  --surface-glass: rgba(24, 24, 27, 0.88);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --lumi-sys-color--surface-translucent: rgba(24, 24, 27, 0.88);
-    --surface-translucent: rgba(24, 24, 27, 0.88);
-    --surface-glass: rgba(24, 24, 27, 0.88);
-  }
-}
-button {
-  appearance: none;
-  -webkit-appearance: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 36px;
-  padding: 8px 18px;
-  font-family: var(--ff-sans, 'Google Sans Flex', sans-serif);
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 18px;
-  color: var(--on-surface, #000000);
-  background-color: var(--lumi-sys-color--surface-bright, #ffffff);
-  border: 1px solid var(--stroke-default, #e3e3e3);
-  border-radius: 999px;
-  cursor: pointer;
-  box-sizing: border-box;
-}
-button:hover {
-  background-color: var(--surface-container-high, #e6e6e6);
-}
-button.active, button.is-active, button.selected, button.is-selected, button[aria-pressed="true"], button[aria-selected="true"] {
-  background-color: var(--accent-container, #dcf1ff);
-  color: var(--accent-fixed, #3186ff);
-  border-color: transparent;
-}
-.lumi-btn, [class^="lumi-btn-"], [class*=" lumi-btn-"] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 38px;
-  padding: 8px 18px;
-  background-color: var(--lumi-sys-color--surface-bright, #ffffff);
-  color: var(--on-surface, #000000);
-  border: 1px solid var(--stroke-default, #e3e3e3);
-  border-radius: 999px;
-  box-sizing: border-box;
-}
-.lumi-btn--primary, .lumi-btn-primary {
-  background-color: var(--lumi-sys-color--accent, #9dd2ff);
-  color: var(--lumi-sys-color--on-surface-default, #000000);
-  border-color: transparent;
-}
-.lumi-btn--primary:hover, .lumi-btn-primary:hover {
-  background-color: var(--lumi-sys-color--accent-container, #dcf1ff);
-}
-:where(.lumi-chip, [class^="lumi-chip"], [class*=" lumi-chip"], [class^="lumi-pill"], [class*=" lumi-pill"]) {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 32px;
-  padding: 0 16px;
-  font-family: var(--ff-sans, 'Google Sans Flex', sans-serif);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--on-surface, #1f1f1f);
-  background: var(--surface-dim, #f2f0f0);
-  border: 1px solid transparent;
-  border-radius: 999px;
-  cursor: pointer;
-}
-:where(.lumi-chip.is-active, .lumi-chip.active, [class^="lumi-chip"].is-active, [class^="lumi-chip"].active, [class*=" lumi-chip"].is-active, [class*=" lumi-chip"].active, [class^="lumi-pill"].is-active, [class^="lumi-pill"].active) {
-  color: var(--accent-fixed, #3186ff);
-  background: var(--accent-container, rgba(49, 134, 255, 0.14));
-  border-color: transparent;
-  font-weight: 600;
-}
-</style>
-
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Incident Triage Data Flow</title>
-  <style>
-    /* Widget layout glue */
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow-y: hidden;
-      font-family: var(--ff-sans);
-      background: transparent;
-      color: var(--on-surface);
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .widget-container {
-      width: 100%;
-      max-width: 680px;
-      margin: 0 auto;
-      box-sizing: border-box;
-      padding: var(--spacing-m);
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-m);
-    }
-
-    .widget-header {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-xs);
-    }
-
-    .widget-header-title {
-      margin: 0;
-      color: var(--on-surface);
-    }
-
-    .widget-header-sub {
-      margin: 0;
-      color: var(--on-surface-variant);
-    }
-
-    .diagram-card {
-      background: var(--surface-dim);
-      border: 1px solid var(--stroke-default);
-      border-radius: var(--r-m);
-      padding: var(--spacing-s);
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* SVG Diagram Styles */
-    svg.flow-diagram {
-      display: block;
-      width: 100%;
-      height: auto;
-      max-width: 660px;
-      margin: 0 auto;
-      user-select: none;
-    }
-
-    .node-group {
-      cursor: pointer;
-      transition: opacity 0.3s ease;
-    }
-
-    .node-bg {
-      transition: fill 0.3s ease, stroke 0.3s ease, stroke-width 0.3s ease;
-    }
-
-    .node-group:hover .node-bg {
-      stroke: var(--primary);
-      stroke-width: 2px;
-    }
-
-    .node-title {
-      font-family: var(--ff-sans);
-      font-size: 13px;
-      font-weight: 500;
-      fill: var(--on-surface);
-      pointer-events: none;
-    }
-
-    .node-sub {
-      font-family: var(--ff-mono);
-      font-size: 12px;
-      font-style: italic;
-      fill: var(--on-surface-variant);
-      pointer-events: none;
-    }
-
-    .group-label {
-      font-family: var(--ff-mono);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      fill: var(--on-surface-variant);
-      pointer-events: none;
-    }
-
-    /* Edge paths */
-    .edge-path {
-      fill: none;
-      stroke: var(--on-surface);
-      stroke-width: 1.3px;
-      stroke-dasharray: 0 4;
-      stroke-linecap: round;
-      opacity: 0.25;
-      transition: opacity 0.35s ease, stroke 0.35s ease, stroke-width 0.35s ease;
-      pointer-events: none;
-    }
-
-    .edge-path.is-active {
-      opacity: 1;
-      stroke: var(--primary);
-      stroke-width: 1.8px;
-    }
-
-    /* Animated flow pulse line */
-    .pulse-path {
-      fill: none;
-      stroke: var(--primary);
-      stroke-width: 2px;
-      stroke-dasharray: 6 12;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .pulse-path.is-active {
-      opacity: 0.9;
-      animation: flowAnimation 1.2s linear infinite;
-    }
-
-    @keyframes flowAnimation {
-      from { stroke-dashoffset: 36; }
-      to { stroke-dashoffset: 0; }
-    }
-
-    /* Node highlight states */
-    .node-group {
-      opacity: 0.4;
-    }
-
-    .node-group.is-active {
-      opacity: 1;
-    }
-
-    .node-group.is-focal .node-bg {
-      fill: var(--accent-container);
-      stroke: var(--primary);
-    }
-
-    /* Edge pill labels */
-    .pill-bg {
-      fill: var(--surface-bright);
-      stroke: var(--stroke-default);
-      stroke-width: 1px;
-      transition: opacity 0.3s ease, stroke 0.3s ease;
-    }
-
-    .pill-text {
-      font-family: var(--ff-mono);
-      font-size: 12px;
-      font-style: italic;
-      fill: var(--on-surface);
-      pointer-events: none;
-    }
-
-    .pill-group {
-      opacity: 0.3;
-      transition: opacity 0.3s ease;
-    }
-
-    .pill-group.is-active {
-      opacity: 1;
-    }
-
-    /* Controls Deck & Narrative Card */
-    .control-deck {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-s);
-      background: var(--surface-dim);
-      border-radius: var(--r-m);
-      padding: var(--spacing-m);
-      border: 1px solid var(--stroke-default);
-    }
-
-    .control-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--spacing-s);
-      flex-wrap: wrap;
-    }
-
-    .phase-chips {
-      display: flex;
-      gap: var(--spacing-xs);
-      flex-wrap: wrap;
-    }
-
-    .phase-indicator {
-      font-family: var(--ff-mono);
-      font-size: 12px;
-      color: var(--on-surface-variant);
-    }
-
-    .narrative-card {
-      background: var(--surface-bright);
-      border-radius: var(--r-s);
-      padding: var(--spacing-m);
-      border-left: 3px solid var(--primary);
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-xs);
-    }
-
-    .narrative-title {
-      font-weight: 600;
-      color: var(--on-surface);
-      margin: 0;
-    }
-
-    .narrative-desc {
-      color: var(--on-surface-variant);
-      margin: 0;
-      line-height: 1.45;
-    }
-
-    .hover-detail {
-      margin-top: var(--spacing-xs);
-      padding-top: var(--spacing-xs);
-      border-top: 1px stroke var(--stroke-default);
-      font-family: var(--ff-mono);
-      font-size: 12px;
-      color: var(--primary);
-    }
-
-    /* Interactive state overrides */
-      </style>
-<script id="lumi-os-theme-init">
-(function() {
-  function syncBody() {
-    var dt = document.documentElement.getAttribute('data-theme');
-    if (document.body && (dt === 'dark' || dt === 'light')) {
-      document.body.classList.toggle('dark-mode', dt === 'dark');
-    }
-  }
-  function syncTheme(theme) {
-    if (theme !== 'dark' && theme !== 'light') return;
-    document.documentElement.setAttribute('data-theme', theme);
-    syncBody();
-  }
-  if (typeof MutationObserver === 'function') {
-    new MutationObserver(syncBody).observe(document.documentElement, {
-      attributes: true, attributeFilter: ['data-theme']
-    });
-  }
-  if (typeof document.addEventListener === 'function') {
-    document.addEventListener('DOMContentLoaded', syncBody);
-  }
-  try {
-    var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
-    if (mq) {
-      var cur = document.documentElement.getAttribute('data-theme');
-      if (!cur) {
-        syncTheme(mq.matches ? 'dark' : 'light');
-      } else {
-        syncTheme(cur);
-      }
-      if (mq.addEventListener) {
-        mq.addEventListener('change', function(e) {
-          syncTheme(e.matches ? 'dark' : 'light');
-        });
-      }
-    }
-  } catch (e) {}
-  window.addEventListener('message', function(e) {
-    if (e.data && (e.data.type === 'set-theme' || e.data.type === 'APPLY_THEME') && e.data.theme) {
-      syncTheme(e.data.theme);
-    }
-  });
-})();
-</script>
 </head>
 <body>
-  <div class="widget-container">
-    <!-- Header -->
-    <div class="widget-header">
-      <h2 class="lumi-headline-m widget-header-title">Incident Triage Data Flow Architecture</h2>
-      <p class="lumi-body-s widget-header-sub">Bitbucket Code & MD Ingestion to LangGraph RCA Agent Execution</p>
-    </div>
 
-    <!-- SVG Architecture Flowchart Card -->
-    <div class="diagram-card" id="diagram-container">
-      <svg class="flow-diagram" viewBox="0 0 660 380" aria-label="Architecture Flowchart">
-        <defs>
-          <!-- Open Caret Marker -->
-          <marker id="lumi-caret" viewBox="0 0 10 10" refX="7.5" refY="5"
-                  markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto">
-            <path d="M 3 1.2 L 7.5 5 L 3 8.8" fill="none" stroke="var(--on-surface)"
-                  stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-          </marker>
-          <!-- Active Caret Marker -->
-          <marker id="lumi-caret-active" viewBox="0 0 10 10" refX="7.5" refY="5"
-                  markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto">
-            <path d="M 3 1.2 L 7.5 5 L 3 8.8" fill="none" stroke="var(--primary)"
-                  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </marker>
-        </defs>
+<header>
+  <div class="title-area">
+    <h1>RCA AGENT ARCHITECTURE</h1>
+    <p>Interactive Executive Walkthrough (Use Left/Right Arrow Keys or Buttons)</p>
+  </div>
 
-        <!-- Swimlane / Cluster Labels -->
-        <text x="75" y="30" class="group-label" text-anchor="middle">INGESTION</text>
-        <text x="220" y="30" class="group-label" text-anchor="middle">PARSING TIER</text>
-        <text x="390" y="30" class="group-label" text-anchor="middle">STORAGE (THE SPINE)</text>
-        <text x="565" y="30" class="group-label" text-anchor="middle">AGENT EXECUTION</text>
-
-        <!-- Dividers -->
-        <line x1="145" y1="20" x2="145" y2="360" stroke="var(--stroke-default)" stroke-dasharray="2 4" stroke-width="1"/>
-        <line x1="295" y1="20" x2="295" y2="360" stroke="var(--stroke-default)" stroke-dasharray="2 4" stroke-width="1"/>
-        <line x1="485" y1="20" x2="485" y2="360" stroke="var(--stroke-default)" stroke-dasharray="2 4" stroke-width="1"/>
-
-        <!-- ================= EDGES (Z-ORDER: EDGES FIRST) ================= -->
-        <!-- Edge 1: Bitbucket -> JavaParser -->
-        <path id="e1" class="edge-path" d="M 125 170 L 160 170 Q 170 170 170 160 L 170 85 Q 170 75 180 75 L 182 75" marker-end="url(#lumi-caret)" fill="none" />
-        <path id="e1-pulse" class="pulse-path" d="M 125 170 L 160 170 Q 170 170 170 160 L 170 85 Q 170 75 180 75 L 182 75"/>
-
-        <!-- Edge 3: Bitbucket -> LLM MD Parser -->
-        <path id="e3" class="edge-path" d="M 125 210 L 160 210 Q 170 210 170 220 L 170 295 Q 170 305 180 305 L 182 305" marker-end="url(#lumi-caret)" fill="none" />
-        <path id="e3-pulse" class="pulse-path" d="M 125 210 L 160 210 Q 170 210 170 220 L 170 295 Q 170 305 180 305 L 182 305"/>
-
-        <!-- Edge 2: JavaParser -> SQLite DB -->
-        <path id="e2" class="edge-path" d="M 258 75 L 342 75" marker-end="url(#lumi-caret)" fill="none" />
-        <path id="e2-pulse" class="pulse-path" d="M 258 75 L 342 75"/>
-
-        <!-- Edge 4: LLM MD Parser -> Vector DB -->
-        <path id="e4" class="edge-path" d="M 258 305 L 280 305 Q 290 305 290 295 L 290 200 Q 290 190 300 190 L 342 190" marker-end="url(#lumi-caret)" fill="none" />
-        <path id="e4-pulse" class="pulse-path" d="M 258 305 L 280 305 Q 290 305 290 295 L 290 200 Q 290 190 300 190 L 342 190"/>
-
-        <!-- Edge 5a: LLM MD Parser -> Service Cards -->
-        <path id="e5a" class="edge-path" d="M 258 305 L 342 305" marker-end="url(#lumi-caret)" fill="none" />
-        <path id="e5a-pulse" class="pulse-path" d="M 258 305 L 342 305"/>
-
-        <!-- Edge 5b: SQLite -> Service Cards -->
-        <path id="e5b" class="edge-path" d="M 390 103 L 390 267" marker-end="url(#lumi-caret)" fill="none" />
-        <path id="e5b-pulse" class="pulse-path" d="M 390 103 L 390 267"/>
-
-        <!-- Edge 6: LangGraph RCA -> SQLite DB (Queries) -->
-        <path id="e6" class="edge-path" d="M 515 170 L 480 170 Q 470 170 470 160 L 470 85 Q 470 75 460 75 L 438 75" marker-end="url(#lumi-caret)" fill="none" />
-        <path id="e6-pulse" class="pulse-path" d="M 515 170 L 480 170 Q 470 170 470 160 L 470 85 Q 470 75 460 75 L 438 75"/>
-
-        <!-- Edge 8: LangGraph RCA -> Vector DB -->
-        <path id="e8" class="edge-path" d="M 515 190 L 438 190" marker-end="url(#lumi-caret)" fill="none" />
-        <path id="e8-pulse" class="pulse-path" d="M 515 190 L 438 190"/>
-
-        <!-- Edge 7: LangGraph RCA -> Service Cards -->
-        <path id="e7" class="edge-path" d="M 515 210 L 480 210 Q 470 210 470 220 L 470 295 Q 470 305 460 305 L 438 305" marker-end="url(#lumi-caret)" fill="none" />
-        <path id="e7-pulse" class="pulse-path" d="M 515 210 L 480 210 Q 470 210 470 220 L 470 295 Q 470 305 460 305 L 438 305"/>
-
-        <!-- ================= PILLS (EDGE LABELS) ================= -->
-        <g id="pill-p1-1" class="pill-group">
-          <rect x="140" y="112" width="60" height="18" rx="9" class="pill-bg"/>
-          <text x="170" y="124" text-anchor="middle" class="pill-text">Java AST</text>
-        </g>
-        <g id="pill-p1-2" class="pill-group">
-          <rect x="140" y="248" width="60" height="18" rx="9" class="pill-bg"/>
-          <text x="170" y="260" text-anchor="middle" class="pill-text">MD Headings</text>
-        </g>
-
-        <g id="pill-p2-1" class="pill-group">
-          <rect x="268" y="66" width="64" height="18" rx="9" class="pill-bg"/>
-          <text x="300" y="78" text-anchor="middle" class="pill-text">populates</text>
-        </g>
-        <g id="pill-p2-2" class="pill-group">
-          <rect x="265" y="222" width="70" height="18" rx="9" class="pill-bg"/>
-          <text x="300" y="234" text-anchor="middle" class="pill-text">hybrid index</text>
-        </g>
-        <g id="pill-p2-3" class="pill-group">
-          <rect x="268" y="296" width="64" height="18" rx="9" class="pill-bg"/>
-          <text x="300" y="308" text-anchor="middle" class="pill-text">YAML spec</text>
-        </g>
-
-        <g id="pill-p3-1" class="pill-group">
-          <rect x="445" y="112" width="70" height="18" rx="9" class="pill-bg"/>
-          <text x="480" y="124" text-anchor="middle" class="pill-text">Symbol Lookup</text>
-        </g>
-        <g id="pill-p3-2" class="pill-group">
-          <rect x="448" y="181" width="64" height="18" rx="9" class="pill-bg"/>
-          <text x="480" y="193" text-anchor="middle" class="pill-text">KB Search</text>
-        </g>
-        <g id="pill-p3-3" class="pill-group">
-          <rect x="448" y="248" width="64" height="18" rx="9" class="pill-bg"/>
-          <text x="480" y="260" text-anchor="middle" class="pill-text">Fast Context</text>
-        </g>
-
-        <!-- ================= NODES ================= -->
-        <!-- Node 1: Bitbucket -->
-        <g id="node-bitbucket" class="node-group" transform="translate(25, 142)" data-id="bitbucket">
-          <rect width="100" height="96" rx="20" class="node-bg" fill="var(--surface-bright)" stroke="var(--outline)"/>
-          <text x="50" y="38" text-anchor="middle" class="node-title">Bitbucket</text>
-          <text x="50" y="56" text-anchor="middle" class="node-sub">Code & MD</text>
-          <text x="50" y="72" text-anchor="middle" class="node-sub" font-size="12">Source Repos</text>
-        </g>
-
-        <!-- Node 2: JavaParser -->
-        <g id="node-javaparser" class="node-group" transform="translate(150, 47)" data-id="javaparser">
-          <rect width="108" height="56" rx="28" class="node-bg" fill="var(--surface-container)" stroke="var(--stroke-default)"/>
-          <text x="54" y="26" text-anchor="middle" class="node-title">JavaParser</text>
-          <text x="54" y="42" text-anchor="middle" class="node-sub">AST & FeignClient</text>
-        </g>
-
-        <!-- Node 3: LLM MD Parser -->
-        <g id="node-mdparser" class="node-group" transform="translate(150, 277)" data-id="mdparser">
-          <rect width="108" height="56" rx="28" class="node-bg" fill="var(--surface-container)" stroke="var(--stroke-default)"/>
-          <text x="54" y="26" text-anchor="middle" class="node-title">LLM Parser</text>
-          <text x="54" y="42" text-anchor="middle" class="node-sub">Markdown Splitter</text>
-        </g>
-
-        <!-- Node 4: SQLite DB -->
-        <g id="node-sqlite" class="node-group" transform="translate(325, 47)" data-id="sqlite">
-          <rect width="130" height="56" rx="12" class="node-bg" fill="var(--surface-container)" stroke="var(--outline)"/>
-          <text x="65" y="26" text-anchor="middle" class="node-title">SQLite Database</text>
-          <text x="65" y="42" text-anchor="middle" class="node-sub">Service Graph & Symbols</text>
-        </g>
-
-        <!-- Node 5: Vector DB -->
-        <g id="node-vectordb" class="node-group" transform="translate(325, 162)" data-id="vectordb">
-          <rect width="130" height="56" rx="12" class="node-bg" fill="var(--surface-container)" stroke="var(--outline)"/>
-          <text x="65" y="26" text-anchor="middle" class="node-title">Vector DB</text>
-          <text x="65" y="42" text-anchor="middle" class="node-sub">KB Chunks Index</text>
-        </g>
-
-        <!-- Node 6: Service Cards -->
-        <g id="node-cards" class="node-group" transform="translate(325, 277)" data-id="cards">
-          <rect width="130" height="56" rx="12" class="node-bg" fill="var(--surface-container)" stroke="var(--outline)"/>
-          <text x="65" y="26" text-anchor="middle" class="node-title">Service Cards</text>
-          <text x="65" y="42" text-anchor="middle" class="node-sub">YAML Summaries</text>
-        </g>
-
-        <!-- Node 7: LangGraph RCA Node (Focal Agent) -->
-        <g id="node-langgraph" class="node-group is-focal" transform="translate(505, 142)" data-id="langgraph">
-          <rect width="120" height="96" rx="20" class="node-bg" fill="var(--accent-container)" stroke="var(--primary)" stroke-width="1.5"/>
-          <text x="60" y="38" text-anchor="middle" class="node-title">LangGraph</text>
-          <text x="60" y="56" text-anchor="middle" class="node-title" font-weight="600">RCA Node</text>
-          <text x="60" y="74" text-anchor="middle" class="node-sub">Agent Execution</text>
-        </g>
-      </svg>
-    </div>
-
-    <!-- Control Deck & Interactive Narrative Card -->
-    <div class="control-deck">
-      <div class="control-toolbar">
-        <div class="phase-chips">
-          <button class="lumi-btn lumi-btn--small lumi-chip" id="chip-1" onclick="setPhase(1)">1. Code/MD Parsing</button>
-          <button class="lumi-btn lumi-btn--small lumi-chip" id="chip-2" onclick="setPhase(2)">2. Storage & Indexing</button>
-          <button class="lumi-btn lumi-btn--small lumi-chip" id="chip-3" onclick="setPhase(3)">3. RCA Execution</button>
-        </div>
-        <div style="display: flex; align-items: center; gap: var(--spacing-s);">
-          <span class="phase-indicator" id="phase-counter">Phase 1 / 3</span>
-          <button class="lumi-btn lumi-btn--small lumi-btn--tonal" id="btn-prev" onclick="setPhase(state.phase - 1)">Prev</button>
-          <button class="lumi-btn lumi-btn--small lumi-btn--primary" id="btn-next" onclick="setPhase(state.phase + 1)">Next</button>
-        </div>
-      </div>
-
-      <!-- Narrative Display -->
-      <div class="narrative-card">
-        <h4 class="lumi-body-m narrative-title" id="phase-title">Phase 1: Code & MD Parsing</h4>
-        <p class="lumi-body-s narrative-desc" id="phase-desc">
-          Bitbucket repositories stream Java source files and Markdown documentation. JavaParser extracts Abstract Syntax Trees (AST) and @FeignClient dependency paths, while the LLM Parser divides documentation by headings.
-        </p>
-        <div id="hover-info" class="hover-detail" style="display: none;"></div>
-      </div>
+  <div class="narrator-bar">
+    <div class="narrator-content">
+      <span class="step-badge" id="step-badge">OVERVIEW: FULL SYSTEM ARCHITECTURE</span>
+      <span class="step-text" id="step-text">Complete end-to-end Root Cause Analysis (RCA) architecture combining automated data ingestion with a self-correcting LangGraph agent workflow.</span>
     </div>
   </div>
 
-  <script>
-    // State management
-    const state = {
-      phase: 1,
-      hoveredNode: null
-    };
+  <div class="controls">
+    <button onclick="setStep(0)">Full View</button>
+    <button onclick="prevStep()">&#8592; Previous</button>
+    <button class="primary" onclick="nextStep()" id="next-btn">Start Walkthrough &#8594;</button>
+  </div>
+</header>
 
-    // Phase Configuration Specifications
-    const PHASES = {
-      1: {
-        title: "Phase 1: Ingestion & Structural Parsing",
-        desc: "Raw code repositories and documentation in Bitbucket are ingested. JavaParser parses Java AST to extract @FeignClient annotations and symbols; the LLM Markdown Parser splits markdown files by section headings.",
-        activeNodes: ["bitbucket", "javaparser", "mdparser"],
-        activeEdges: ["e1", "e3"],
-        activePills: ["pill-p1-1", "pill-p1-2"]
-      },
-      2: {
-        title: "Phase 2: Storage & Multi-Modal Indexing",
-        desc: "Parsed data populates the system storage layer (The Spine). Structured service topology & call graphs enter SQLite (`services`, `edges`, `symbols`), document chunks fill Vector DB, and synthesized YAML Service Cards are written.",
-        activeNodes: ["javaparser", "mdparser", "sqlite", "vectordb", "cards"],
-        activeEdges: ["e2", "e4", "e5a", "e5b"],
-        activePills: ["pill-p2-1", "pill-p2-2", "pill-p2-3"]
-      },
-      3: {
-        title: "Phase 3: RCA Agent Triage Execution",
-        desc: "The LangGraph RCA Node triggers during incident triage. It executes deterministic SQL symbol lookups for fast graph traversal, queries Vector DB for historical KB incidents, and retrieves YAML Service Cards for lightweight context.",
-        activeNodes: ["sqlite", "vectordb", "cards", "langgraph"],
-        activeEdges: ["e6", "e8", "e7"],
-        activePills: ["pill-p3-1", "pill-p3-2", "pill-p3-3"]
-      }
-    };
+<div id="viewport">
+  <div id="canvas">
 
-    // Node Information Tooltips
-    const NODE_DETAILS = {
-      bitbucket: "Bitbucket: Primary repository source holding Java service source code, API contracts, and Markdown runbooks.",
-      javaparser: "JavaParser: Extracts Java AST, class definitions, method signatures, and @FeignClient REST targets.",
-      mdparser: "LLM Markdown Parser: Context-aware document chunker that splits operational specs and runbooks by heading hierarchy.",
-      sqlite: "SQLite DB: Deterministic service dependency graph containing tables for `services`, `edges`, and code `symbols`.",
-      vectordb: "Vector DB: Embedded Knowledge Base chunks indexed for semantic search during root-cause inquiry.",
-      cards: "Service Cards: Compact, LLM-generated YAML summaries providing fast high-density system context.",
-      langgraph: "LangGraph RCA Node: Autonomous triage node combining deterministic SQL queries, KB search, and card retrieval."
-    };
+    <!-- BACKGROUND ZONES -->
+    <div class="zone zone-ingestion" id="z-ingestion">
+      <div class="zone-label">DATA INGESTION & STORAGE LAYER</div>
+    </div>
 
-    function setPhase(p) {
-      if (p < 1) p = 1;
-      if (p > 3) p = 3;
-      state.phase = p;
-      updateViz();
+    <div class="zone zone-pipelines" id="z-pipelines">
+      <div class="zone-label">Pipelines</div>
+    </div>
+
+    <div class="zone zone-subpipeline" id="z-md" style="top: 100px; height: 175px;">
+      <div class="zone-label">Markdown (UI/Arch)</div>
+    </div>
+
+    <div class="zone zone-sub-2" id="z-code" style="top: 300px; height: 185px;">
+      <div class="zone-label">Source Code (Microservices)</div>
+    </div>
+
+    <div class="zone zone-sub-3" id="z-logs" style="top: 510px; height: 175px;">
+      <div class="zone-label">Live Logs</div>
+    </div>
+
+    <div class="zone zone-datastores" id="z-stores">
+      <div class="zone-label">Data Stores</div>
+    </div>
+
+    <div class="zone zone-langgraph" id="z-langgraph">
+      <div class="zone-label">LANGGRAPH ENGINE (RCA Agent Workflow)</div>
+    </div>
+
+    <!-- SVG CONNECTORS -->
+    <svg id="edges">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569"/>
+        </marker>
+        <marker id="arrow-active" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-purple" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 10 5 L 0 9 z" fill="#9333ea"/>
+        </marker>
+      </defs>
+
+      <!-- Pipeline 1: Markdown -->
+      <path id="e-md1" class="edge" d="M 168 192 L 195 192" marker-end="url(#arrow)"/>
+      <path id="e-md2" class="edge" d="M 335 192 L 362 192" marker-end="url(#arrow)"/>
+      <path id="e-md3" class="edge" d="M 482 192 L 518 192 L 518 290 L 555 290" marker-end="url(#arrow)"/>
+
+      <!-- Pipeline 2: Source Code -->
+      <path id="e-code1" class="edge" d="M 185 398 L 212 398" marker-end="url(#arrow)"/>
+      <path id="e-code2" class="edge" d="M 322 398 L 350 398" marker-end="url(#arrow)"/>
+      <path id="e-code3" class="edge" d="M 480 398 L 518 398 L 518 335 L 555 335" marker-end="url(#arrow)"/>
+
+      <!-- Pipeline 3: Live Logs -->
+      <path id="e-log1" class="edge" d="M 285 602 L 315 602" marker-end="url(#arrow)"/>
+      <path id="e-log2" class="edge" d="M 445 602 L 518 602 L 518 525 L 555 525" marker-end="url(#arrow)"/>
+
+      <!-- UI to Node 1 -->
+      <path id="e-ui-n1" class="edge" d="M 885 375 L 928 375" marker-end="url(#arrow)"/>
+
+      <!-- Node 1 to Node 2 (Implicit / Vague) -->
+      <path id="e-n1-n2" class="edge" d="M 1015 335 L 1015 215 L 1140 215" marker-end="url(#arrow)"/>
+
+      <!-- Node 1 to Node 4 (Logic Question) -->
+      <path id="e-n1-n4" class="edge" d="M 1058 375 L 1380 375 L 1380 515" marker-end="url(#arrow)"/>
+
+      <!-- Node 1 to Node 3 (Direct Error Trace) -->
+      <path id="e-n1-n3" class="edge" d="M 1015 415 L 1015 495 L 1068 495" marker-end="url(#arrow)"/>
+
+      <!-- Node 3 to Self-Correction Loop -->
+      <path id="e-n3-loop" class="edge" d="M 1125 545 L 1125 572 L 1160 572" marker-end="url(#arrow)"/>
+
+      <!-- Loop (No Logs) -> Widen Time Window -> Node 3 -->
+      <path id="e-loop-widen" class="edge" d="M 1245 538 L 1245 480 L 1280 480" marker-end="url(#arrow)"/>
+      <path id="e-widen-n3" class="edge" d="M 1330 445 L 1330 425 L 1125 425 L 1125 445" marker-end="url(#arrow)"/>
+
+      <!-- Loop (Logs Found) -> Pull Code Logic -> Node 4 -->
+      <path id="e-loop-pull" class="edge" d="M 1282 572 L 1300 572" marker-end="url(#arrow)"/>
+      <path id="e-pull-n4" class="edge" d="M 1395 572 L 1418 572" marker-end="url(#arrow)"/>
+
+      <!-- Node 2 to Node 5 -->
+      <path id="e-n2-n5" class="edge" d="M 1265 215 L 1475 215 L 1475 335 L 1495 335" marker-end="url(#arrow)"/>
+
+      <!-- Node 4 to Node 5 -->
+      <path id="e-n4-n5" class="edge" d="M 1475 515 L 1475 390 L 1495 390" marker-end="url(#arrow)"/>
+
+      <!-- Node 5 to Actionable Report -->
+      <path id="e-n5-out" class="edge" d="M 1595 362 L 1612 362" marker-end="url(#arrow)"/>
+
+      <!-- Dashed Database Query Lines -->
+      <!-- Vector DB to Node 2 -->
+      <path id="e-q-vdb-n2" class="edge edge-dashed" d="M 655 290 L 720 290 L 720 185 L 1140 185" marker-end="url(#arrow-purple)"/>
+      <!-- Elasticsearch to Node 3 -->
+      <path id="e-q-es-n3" class="edge edge-dashed" d="M 655 525 L 1068 525" marker-end="url(#arrow-purple)"/>
+      <!-- Vector DB to Node 4 -->
+      <path id="e-q-vdb-n4" class="edge edge-dashed" d="M 655 340 L 708 340 L 708 632 L 1475 632 L 1475 605" marker-end="url(#arrow-purple)"/>
+    </svg>
+
+    <!-- EDGE LABELS -->
+    <div class="edge-label" id="lbl-implicit" style="left: 1065px; top: 215px;">Implicit / Vague</div>
+    <div class="edge-label" id="lbl-logic" style="left: 1215px; top: 375px;">Logic Question</div>
+    <div class="edge-label" id="lbl-direct" style="left: 1015px; top: 465px;">Direct Error Trace</div>
+    <div class="edge-label" id="lbl-nologs" style="left: 1245px; top: 505px;">No Logs?</div>
+    <div class="edge-label" id="lbl-logsfound" style="left: 1265px; top: 602px;">Logs Found?</div>
+
+    <div class="edge-label" id="lbl-q1" style="left: 785px; top: 185px;">Queries</div>
+    <div class="edge-label" id="lbl-q2" style="left: 825px; top: 525px;">Queries</div>
+    <div class="edge-label" id="lbl-q3" style="left: 825px; top: 632px;">Queries</div>
+
+    <!-- PIPELINE 1 NODES: MARKDOWN -->
+    <div class="node" id="n-md-files" style="left: 72px; top: 168px; width: 96px; height: 48px;">
+      Markdown Files
+    </div>
+    <div class="node" id="n-md-split" style="left: 195px; top: 168px; width: 140px; height: 48px;">
+      MarkdownHeaderTextSplitter
+    </div>
+    <div class="node" id="n-md-ai" style="left: 362px; top: 140px; width: 120px; height: 105px;">
+      <strong>AI Metadata Enrichment</strong>
+      (tags: is_ui_mapping, associated_apis)
+    </div>
+
+    <!-- PIPELINE 2 NODES: SOURCE CODE -->
+    <div class="node" id="n-code-repo" style="left: 78px; top: 372px; width: 107px; height: 52px;">
+      Source Code Repos
+    </div>
+    <div class="node" id="n-code-split" style="left: 212px; top: 362px; width: 110px; height: 72px;">
+      TreeSitter / Language CodeSplitter
+    </div>
+    <div class="node" id="n-code-ast" style="left: 350px; top: 348px; width: 130px; height: 100px;">
+      <strong>AST Structural Slices</strong>
+      (Prepends filename & context)
+    </div>
+
+    <!-- PIPELINE 3 NODES: LIVE LOGS -->
+    <div class="node" id="n-log-stream" style="left: 180px; top: 575px; width: 105px; height: 55px;">
+      Live Streaming Logs
+    </div>
+    <div class="node" id="n-log-pipe" style="left: 315px; top: 552px; width: 130px; height: 100px;">
+      <strong>Production Log Pipelines</strong>
+      (Flattens traces, system errors)
+    </div>
+
+    <!-- DATA STORE NODES -->
+    <div class="node node-cylinder" id="n-vdb" style="left: 555px; top: 220px; width: 105px; height: 185px;">
+      <strong>VECTOR DATABASE</strong>
+      (Qdrant / pgvector)<br>
+      Indices: MD Semantic, AST Code, Exact Name
+    </div>
+
+    <div class="node node-cylinder" id="n-es" style="left: 555px; top: 445px; width: 105px; height: 145px;">
+      <strong>ELASTICSEARCH</strong>
+      (Deterministic Lookups via KQL & Lucene)
+    </div>
+
+    <!-- LANGGRAPH WORKFLOW NODES -->
+    <div class="node node-parallelogram" id="n-ui" style="left: 765px; top: 330px; width: 120px; height: 90px;">
+      <div>
+        <strong>User Interface (UI)</strong>
+        Input: Vague complaints, traces
+      </div>
+    </div>
+
+    <div class="node node-diamond diamond-yellow" id="n-node1" style="left: 942px; top: 317px;">
+      <div>
+        <strong>Node 1:</strong>
+        Intent & AI Router
+      </div>
+    </div>
+
+    <div class="node node-blue" id="n-node2" style="left: 1140px; top: 155px; width: 125px; height: 95px;">
+      <strong>Node 2: KB Map</strong>
+      (Direct problem logic & semantic search)
+    </div>
+
+    <div class="node node-blue" id="n-node3" style="left: 1068px; top: 445px; width: 115px; height: 100px;">
+      <strong>Node 3: ES Logs</strong>
+      (Elasticsearch queries & timeframe limits)
+    </div>
+
+    <div class="node node-diamond diamond-blue" id="n-loop" style="left: 1175px; top: 514px;">
+      <div>
+        <strong>Self-Correction</strong>
+        Evaluation Loop
+      </div>
+    </div>
+
+    <div class="node node-blue" id="n-widen" style="left: 1280px; top: 445px; width: 105px; height: 65px;">
+      <strong>Widen Time Window</strong>
+      & Retry Node 3
+    </div>
+
+    <div class="node node-blue" id="n-pull" style="left: 1300px; top: 540px; width: 95px; height: 65px;">
+      <strong>Pull Code Logic</strong>
+      (Go to Node 4)
+    </div>
+
+    <div class="node node-blue" id="n-node4" style="left: 1418px; top: 515px; width: 115px; height: 90px;">
+      <strong>Node 4: Code</strong>
+      (Lexical matches & AST Indices)
+    </div>
+
+    <div class="node node-blue" id="n-node5" style="left: 1495px; top: 312px; width: 100px; height: 105px;">
+      <strong>Node 5: LLM Synthesis Engine</strong>
+      (Combines MD Context + Log Blocks + AST)
+    </div>
+
+    <div class="node node-parallelogram node-green" id="n-output" style="left: 1608px; top: 312px; width: 60px; height: 105px; width: 110px; left: 1558px; transform: skew(-10deg);">
+      <div style="transform: skew(10deg);">
+        <strong>Actionable RCA Report</strong>
+        (Timeline, Cause, Recommended Fix)
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Adjust Node 5 & Output spacing slightly for clean visual fit inside LangGraph box
+  document.getElementById('n-node5').style.left = '1445px';
+  document.getElementById('n-output').style.left = '1560px';
+  document.getElementById('e-n2-n5').setAttribute('d', 'M 1265 215 L 1425 215 L 1425 340 L 1445 340');
+  document.getElementById('e-n4-n5').setAttribute('d', 'M 1475 515 L 1475 417');
+  document.getElementById('e-n5-out').setAttribute('d', 'M 1545 362 L 1562 362');
+
+  let currentStep = 0;
+
+  const steps = [
+    {
+      badge: "OVERVIEW: FULL SYSTEM ARCHITECTURE",
+      text: "Complete end-to-end Root Cause Analysis (RCA) architecture combining automated data ingestion with a self-correcting LangGraph agent workflow.",
+      nodes: [], edges: [], queryEdges: [], labels: [], zones: []
+    },
+    {
+      badge: "STEP 1 OF 7: UI & ARCHITECTURE DOCS INGESTION",
+      text: "Markdown documentation is split by headers, enriched with AI metadata tags (UI mappings & APIs), and indexed into the Vector Database.",
+      nodes: ['n-md-files', 'n-md-split', 'n-md-ai', 'n-vdb'],
+      edges: ['e-md1', 'e-md2', 'e-md3'],
+      queryEdges: [],
+      labels: [],
+      zones: ['z-ingestion', 'z-pipelines', 'z-md', 'z-stores']
+    },
+    {
+      badge: "STEP 2 OF 7: MICROSERVICES SOURCE CODE INGESTION",
+      text: "Source code repositories are parsed via TreeSitter into AST Structural Slices (with filename & context) and stored in the Vector Database.",
+      nodes: ['n-code-repo', 'n-code-split', 'n-code-ast', 'n-vdb'],
+      edges: ['e-code1', 'e-code2', 'e-code3'],
+      queryEdges: [],
+      labels: [],
+      zones: ['z-ingestion', 'z-pipelines', 'z-code', 'z-stores']
+    },
+    {
+      badge: "STEP 3 OF 7: REAL-TIME PRODUCTION LOGS INGESTION",
+      text: "Live streaming logs run through flattening pipelines to capture traces and system errors, indexing directly into Elasticsearch.",
+      nodes: ['n-log-stream', 'n-log-pipe', 'n-es'],
+      edges: ['e-log1', 'e-log2'],
+      queryEdges: [],
+      labels: [],
+      zones: ['z-ingestion', 'z-pipelines', 'z-logs', 'z-stores']
+    },
+    {
+      badge: "STEP 4 OF 7: INCIDENT TRIGGER & AI INTENT ROUTING",
+      text: "A user inputs a vague complaint or error trace in the UI. Node 1 (Intent & AI Router) evaluates the input to dynamically select the investigation path.",
+      nodes: ['n-ui', 'n-node1'],
+      edges: ['e-ui-n1'],
+      queryEdges: [],
+      labels: ['lbl-implicit', 'lbl-logic', 'lbl-direct'],
+      zones: ['z-langgraph']
+    },
+    {
+      badge: "STEP 5 OF 7: PATH A & B — SEMANTIC KB & LOGIC ROUTING",
+      text: "Implicit/Vague complaints route to Node 2 (KB Map) to query the Vector DB, while direct Logic Questions jump straight to Node 4 for code analysis.",
+      nodes: ['n-node1', 'n-node2', 'n-node4', 'n-vdb'],
+      edges: ['e-n1-n2', 'e-n1-n4'],
+      queryEdges: ['e-q-vdb-n2', 'e-q-vdb-n4'],
+      labels: ['lbl-implicit', 'lbl-logic', 'lbl-q1', 'lbl-q3'],
+      zones: ['z-langgraph', 'z-stores']
+    },
+    {
+      badge: "STEP 6 OF 7: PATH C — LOGS & SELF-CORRECTION LOOP",
+      text: "Direct Error Traces route to Node 3 to query Elasticsearch. If no logs are found, the Self-Correction Loop automatically widens the time window and retries.",
+      nodes: ['n-node1', 'n-node3', 'n-loop', 'n-widen', 'n-pull', 'n-node4', 'n-es'],
+      edges: ['e-n1-n3', 'e-n3-loop', 'e-loop-widen', 'e-widen-n3', 'e-loop-pull', 'e-pull-n4'],
+      queryEdges: ['e-q-es-n3'],
+      labels: ['lbl-direct', 'lbl-nologs', 'lbl-logsfound', 'lbl-q2'],
+      zones: ['z-langgraph', 'z-stores']
+    },
+    {
+      badge: "STEP 7 OF 7: LLM SYNTHESIS & ACTIONABLE RCA REPORT",
+      text: "Node 5 (LLM Synthesis Engine) combines Markdown context, log blocks, and AST code slices to generate the final Actionable RCA Report.",
+      nodes: ['n-node2', 'n-node4', 'n-node5', 'n-output'],
+      edges: ['e-n2-n5', 'e-n4-n5', 'e-n5-out'],
+      queryEdges: [],
+      labels: [],
+      zones: ['z-langgraph']
+    }
+  ];
+
+  function renderStep() {
+    const step = steps[currentStep];
+    document.getElementById('step-badge').textContent = step.badge;
+    document.getElementById('step-text').textContent = step.text;
+
+    const nextBtn = document.getElementById('next-btn');
+    if (currentStep === 0) {
+      nextBtn.innerHTML = "Start Walkthrough &#8594;";
+    } else if (currentStep === steps.length - 1) {
+      nextBtn.innerHTML = "Reset to Overview &#8634;";
+    } else {
+      nextBtn.innerHTML = `Next Step (${currentStep + 1}/7) &#8594;`;
     }
 
-    function updateViz() {
-      const current = PHASES[state.phase];
+    const allNodes = document.querySelectorAll('.node');
+    const allEdges = document.querySelectorAll('.edge');
+    const allLabels = document.querySelectorAll('.edge-label');
+    const allZones = document.querySelectorAll('.zone');
 
-      // 1. Controls & Readouts
-      document.getElementById("phase-counter").textContent = `Phase ${state.phase} / 3`;
-      document.getElementById("btn-prev").disabled = (state.phase === 1);
-      document.getElementById("btn-next").disabled = (state.phase === 3);
-
-      // Chips styling
-      for (let i = 1; i <= 3; i++) {
-        const chip = document.getElementById(`chip-${i}`);
-        if (i === state.phase) {
-          chip.classList.add("is-active");
-          chip.style.background = getCssVar('--accent-container');
-          chip.style.color = getCssVar('--primary');
-          chip.style.fontWeight = "600";
-        } else {
-          chip.classList.remove("is-active");
-          chip.style.background = getCssVar('--surface-bright');
-          chip.style.color = getCssVar('--on-surface');
-          chip.style.fontWeight = "400";
-        }
+    // Reset classes
+    allNodes.forEach(el => el.classList.remove('dimmed', 'active-node'));
+    allEdges.forEach(el => {
+      el.classList.remove('dimmed', 'active-edge', 'active-edge-query');
+      if (el.classList.contains('edge-dashed')) {
+        el.setAttribute('marker-end', 'url(#arrow-purple)');
+      } else {
+        el.setAttribute('marker-end', 'url(#arrow)');
       }
+    });
+    allLabels.forEach(el => el.classList.remove('dimmed', 'active-label'));
+    allZones.forEach(el => el.classList.remove('dimmed'));
 
-      // Narrative
-      document.getElementById("phase-title").textContent = current.title;
-      document.getElementById("phase-desc").textContent = current.desc;
+    if (currentStep === 0) return;
 
-      // 2. Nodes Highlight
-      document.querySelectorAll(".node-group").forEach(node => {
-        const id = node.getAttribute("data-id");
-        if (current.activeNodes.includes(id)) {
-          node.classList.add("is-active");
-        } else {
-          node.classList.remove("is-active");
-        }
-      });
+    // Dim everything first
+    allNodes.forEach(el => el.classList.add('dimmed'));
+    allEdges.forEach(el => el.classList.add('dimmed'));
+    allLabels.forEach(el => el.classList.add('dimmed'));
+    allZones.forEach(el => el.classList.add('dimmed'));
 
-      // 3. Edges Highlight & Marker swap
-      const allEdgeIds = ["e1", "e2", "e3", "e4", "e5a", "e5b", "e6", "e7", "e8"];
-      allEdgeIds.forEach(id => {
-        const pathEl = document.getElementById(id);
-        const pulseEl = document.getElementById(`${id}-pulse`);
-        if (!pathEl) return;
-
-        if (current.activeEdges.includes(id)) {
-          pathEl.classList.add("is-active");
-          pathEl.setAttribute("marker-end", "url(#lumi-caret-active)");
-          if (pulseEl) pulseEl.classList.add("is-active");
-        } else {
-          pathEl.classList.remove("is-active");
-          pathEl.setAttribute("marker-end", "url(#lumi-caret)");
-          if (pulseEl) pulseEl.classList.remove("is-active");
-        }
-      });
-
-      // 4. Pills Highlight
-      const allPills = ["pill-p1-1", "pill-p1-2", "pill-p2-1", "pill-p2-2", "pill-p2-3", "pill-p3-1", "pill-p3-2", "pill-p3-3"];
-      allPills.forEach(pid => {
-        const pillEl = document.getElementById(pid);
-        if (!pillEl) return;
-        if (current.activePills.includes(pid)) {
-          pillEl.classList.add("is-active");
-        } else {
-          pillEl.classList.remove("is-active");
-        }
-      });
-    }
-
-    // Attach Node Hover Listeners
-    document.querySelectorAll(".node-group").forEach(node => {
-      const id = node.getAttribute("data-id");
-
-      node.addEventListener("mouseenter", () => {
-        const infoEl = document.getElementById("hover-info");
-        infoEl.style.display = "block";
-        if (infoEl) infoEl.textContent = `Node Focus: ${NODE_DETAILS[id] || ''}`;
-      });
-
-      node.addEventListener("mouseleave", () => {
-        const infoEl = document.getElementById("hover-info");
-        infoEl.style.display = "none";
-        if (infoEl) infoEl.textContent = "";
-      });
+    // Activate current step elements
+    step.zones.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('dimmed');
     });
 
-    // Theme sync & iframe auto-resize
-    const applyTheme = t => {
-      document.documentElement.setAttribute('data-theme', t);
-      updateViz();
-    };
-
-    if (!document.documentElement.hasAttribute('data-theme') && window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
-      applyTheme('dark');
-    }
-
-    window.addEventListener('message', e => {
-      if (e.data?.type === 'set-theme' || e.data?.type === 'APPLY_THEME') {
-        applyTheme(e.data.theme);
+    step.nodes.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('dimmed');
+        el.classList.add('active-node');
       }
     });
 
-    // Initial render
-    updateViz();
-
-    (function autoResize() {
-      function notifyHeight() {
-        const c = document.querySelector('.widget-container') || document.body;
-        if (!c) return;
-        const h = Math.ceil(Math.max(c.getBoundingClientRect().bottom, c.scrollHeight));
-        window.parent.postMessage({type: 'widget-resize', height: h}, '*');
+    step.edges.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('dimmed');
+        el.classList.add('active-edge');
+        el.setAttribute('marker-end', 'url(#arrow-active)');
       }
-      window.addEventListener('load', () => setTimeout(notifyHeight, 100));
-      new ResizeObserver(() => notifyHeight()).observe(document.querySelector('.widget-container') || document.body);
-    })();
-  </script>
+    });
 
-<script>/*luminous-slider-normalizer*/(function(){function f(r){if(!r||r.type!=='range')return;var mn=parseFloat(r.min||'0'),mx=parseFloat(r.max||'100'),v=parseFloat(r.value);if(isNaN(v))v=(mn+mx)/2;var p=mx>mn?((v-mn)/(mx-mn))*100:50;r.style.setProperty('--progress',p+'%');r.style.removeProperty('--slider-fill');}function all(){document.querySelectorAll('input[type="range"], .lumi-slider').forEach(f);}document.addEventListener('input',function(e){f(e.target);});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',all);else all();})();</script>
+    step.queryEdges.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('dimmed');
+        el.classList.add('active-edge-query');
+        el.setAttribute('marker-end', 'url(#arrow-purple)');
+      }
+    });
+
+    step.labels.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('dimmed');
+        el.classList.add('active-label');
+      }
+    });
+  }
+
+  function nextStep() {
+    currentStep = (currentStep + 1) % steps.length;
+    renderStep();
+  }
+
+  function prevStep() {
+    currentStep = (currentStep - 1 + steps.length) % steps.length;
+    renderStep();
+  }
+
+  function setStep(idx) {
+    currentStep = idx;
+    renderStep();
+  }
+
+  // Keyboard navigation for seamless presentation
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') nextStep();
+    if (e.key === 'ArrowLeft') prevStep();
+    if (e.key === 'Escape') setStep(0);
+  });
+
+  // Auto-scale canvas to fit any screen/projector resolution
+  function fitCanvas() {
+    const viewport = document.getElementById('viewport');
+    const canvas = document.getElementById('canvas');
+    const scaleX = (viewport.clientWidth - 40) / 1700;
+    const scaleY = (viewport.clientHeight - 40) / 760;
+    const scale = Math.min(scaleX, scaleY, 1);
+    canvas.style.transform = `scale(${scale})`;
+  }
+
+  window.addEventListener('resize', fitCanvas);
+  fitCanvas();
+</script>
 </body>
 </html>
-```
